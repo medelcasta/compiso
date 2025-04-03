@@ -73,6 +73,16 @@
                     }
                 }
 
+                if($tmp_tipo_usuario == ''){
+                    $err_tipo_usuario = "El tipo de usuario es obligatorio";
+                }else{
+                    if($tmp_tipo_usuario != 1 && $tmp_tipo_usuario != 2){
+                        $err_tipo_usuario = "El tipo de usuario no es correcto";
+                    }else{
+                        $tipo_usuario = $tmp_tipo_usuario;
+                    }
+                }
+
                 if(isset($usuario) && isset($contrasena)){
                     /*
                     $sql = "INSERT INTO usuarios VALUES ('$usuario', '$contrasena_cifrada')";
@@ -107,7 +117,13 @@
             <input type="text" name="contrasena" size="20px">
             <?php if(isset($err_contrasena)) echo "<span class='error'>$err_contrasena</span>" ?>
             <br>
-            <button> <a>Registrarse</a></button>
+            <select name="tipo_usuario">
+                <option value="1">Inquilino</option>
+                <option value="2">Propietario</option>
+            <select>
+            <?php if(isset($err_tipo_usuario)) echo "<span class='error'>$err_tipo_usuario</span>" ?>
+            <br>
+            <input class="btn btn-success" type="submit" value="Registrar">
             <a href="./inicio_sesion.html">Ya tengo cuenta</a>
         </form>
     </div>
