@@ -91,7 +91,7 @@
         <?php if(isset($err_contrasena)) echo "<span class='error'>$err_contrasena</span>" ?>
         <br>
         <input class="btn btn-primary" type="submit" value="Iniciar Sesion">
-        <button class="btn btn-secondary"><a href="./index.html">Atras</a></button>
+        <button class="btn btn-secondary"><a href="./index.html">Volver a Inicio</a></button>
     </div>
 </body>
 </html>

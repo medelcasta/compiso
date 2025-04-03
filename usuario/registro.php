@@ -83,7 +83,7 @@
                     }
                 }
 
-                if(isset($usuario) && isset($contrasena)){
+                if(isset($usuario) && isset($contrasena) && isset($tipo_usuario)){
                     /*
                     $sql = "INSERT INTO usuarios VALUES ('$usuario', '$contrasena_cifrada')";
 
@@ -94,10 +94,11 @@
                     $sql = $_conexion -> prepare("INSERT INTO  usuarios VALUES (?,?)");
 
                     // 2. Enlazado 
-                    $sql -> bind_param("ss", 
+                    $sql -> bind_param("sss", 
                         $usuario, 
-                        $contrasena_cifrada
-                    ); //se pone s si es string e i si es int (si hubiera decimales se pone d)
+                        $contrasena_cifrada,
+                        $tipo_usuario
+                    ); 
 
                     // 3. Ejecución
                     $sql -> execute();
@@ -124,7 +125,8 @@
             <?php if(isset($err_tipo_usuario)) echo "<span class='error'>$err_tipo_usuario</span>" ?>
             <br>
             <input class="btn btn-success" type="submit" value="Registrar">
-            <a href="./inicio_sesion.html">Ya tengo cuenta</a>
+            <a href="./usuario/iniciar_sesion">Ya tengo cuenta</a>
+            <button class="btn btn-secondary"><a href="./index.html">Volver a Inicio</a></button>
         </form>
     </div>
 </body>
