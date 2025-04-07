@@ -1,4 +1,5 @@
 <?php
+
     $_servidor = "sql302.infinityfree.com"; // O "localhost"
     $_usuario = "if0_38638851";
     $_contrasena = "4IbtiTJdujdk";
