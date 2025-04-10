@@ -13,6 +13,8 @@
         <h1 class="header">Compiso</h1>
         <button><a href="./usuario/iniciar_sesion.php">Iniciar Sesion</a></button>
         <button><a href="./usuario/registro.php">Registro</a></button>
+        <!-- Nuevo botón -->
+        <button><a href="./usuario/subir_vivienda.php">Subir vivienda</a></button>
         <nav class="menu">
             <ul>
                 <li><a href="#">Inicio</a></li>
@@ -22,14 +24,12 @@
         </nav>
         <div class="row">
             <?php
-     
-                require('./utiles/conexion.php');
 
+                require('./utiles/conexion.php');
 
                 $sql = "SELECT nombre FROM Usuario"; 
                 $result = $_conexion->query($sql);
 
-    
                 if ($result->num_rows > 0) {
                     while($row = $result->fetch_assoc()) {
                         echo '<div class="col-md-4 mb-4">';

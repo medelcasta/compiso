@@ -10,18 +10,10 @@
     ini_set("display_errors", 1);
 
     require('./util/conexion.php');
-    /*session_start();
-    if (isset($_SESSION["usuario"])) {
-        echo "<h2>Bienvenid@ " . $_SESSION["usuario"] . "</h2>";
-    } else {
-        header("location: usuario/iniciar_sesion.php");
-        exit;
-    }*/
     ?>
 </head>
 <body>
     <div class="container">
-         <!--<a class="btn btn-warning" href="usuario/cerrar_sesion.php">Cerrar sesión</a>-->
         <h1>Búsqueda de Vivienda</h1>
         <!-- Formulario de búsqueda -->
         <form method="POST" action="">
@@ -37,8 +29,8 @@
             $criterio = $_POST["criterio"];
             
             // 1. Preparar la consulta
-            $sql = $_conexion->prepare("SELECT * FROM Vivienda WHERE direccion LIKE ? OR ciudad LIKE ?");
-
+            $sql = $_conexion->prepare("SELECT id_vivienda, direccion, ciudad, descripcion, precio, habitaciones, baños, disponibilidad FROM Vivienda WHERE direccion LIKE ? OR ciudad LIKE ?");
+            
             // 2. Bind de parámetros
             $param = "%$criterio%";
             $sql->bind_param("ss", $param, $param);
@@ -60,6 +52,7 @@
                             <th>Habitaciones</th>
                             <th>Baños</th>
                             <th>Disponibilidad</th>
+                            <th>Más Información</th>
                         </tr>
                       </thead>';
                 echo '<tbody>';
@@ -72,6 +65,8 @@
                     echo "<td>" . $fila["habitaciones"] . "</td>";
                     echo "<td>" . $fila["baños"] . "</td>";
                     echo "<td>" . ($fila["disponibilidad"] ? "Disponible" : "No disponible") . "</td>";
+                    // Botón que redirige a viviendas.php
+                    echo '<td><a href="viviendas.php?id_vivienda=' . $fila["id_vivienda"] . '" class="btn btn-info">Ver más</a></td>';
                     echo "</tr>";
                 }
                 echo '</tbody>';
@@ -88,3 +83,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
+
