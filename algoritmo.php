@@ -1,4 +1,5 @@
-<?php
+<!-- 
+?php
 // Conexión
 $pdo = new PDO('mysql:host=localhost;dbname=pisos', 'root', '');
 
@@ -49,10 +50,10 @@ foreach ($otrosUsuarios as $usuario) {
 ?>
 
 
-<!--00000000000000000000000 bidirecional 000000000000000000000000000000 -->
+00000000000000000000000 bidirecional 000000000000000000000000000000 
 
 
-<?php
+?php
 // Conexión a la base de datos
 $pdo = new PDO('mysql:host=localhost;dbname=pisos', 'root', '');
 
@@ -104,4 +105,4 @@ foreach ($otrosUsuarios as $usuario) {
 
     echo "{$usuario['nombre']} tiene un match bidireccional del {$matchFinal}% con {$usuarioBase['nombre']}<br>";
 }
-?>
+?>-->

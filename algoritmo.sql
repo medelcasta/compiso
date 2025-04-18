@@ -1,3 +1,4 @@
+/*
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50),
@@ -19,4 +20,11 @@ INSERT INTO usuarios (nombre, edad, sexo, fumador, mascotas, limpieza, sociabili
 VALUES 
 ('Carlos', 25, 'hombre', 0, 1, 4, 3, 500, 'diurno', 'Madrid', 22, 30, 'mujer'),
 ('Lucía', 24, 'mujer', 0, 1, 5, 4, 500, 'diurno', 'Madrid', 20, 28, 'indiferente'),
-('Pedro', 30, 'hombre', 1, 0, 2, 2, 600, 'nocturno', 'Madrid', 25, 35, 'mujer');
+('Pedro', 30, 'hombre', 1, 0, 2, 2, 600, 'nocturno', 'Madrid', 25, 35, 'mujer');*/
+
+CREATE TABLE match (
+    id_match INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    vector_embedding JSON NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
