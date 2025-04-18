@@ -1,29 +1,3 @@
-<?php
-// Conexión a la base de datos
-$db_host = 'tu_host';
-$db_user = 'tu_usuario';
-$db_pass = 'tu_contraseña';
-$db_name = 'tu_base_de_datos';
-
-$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
-
-// Obtener vectores desde la base de datos
-$sql = "SELECT id_usuario, vector_embedding FROM usuarios";
-$result = $conn->query($sql);
-
-$usuarios = [];
-while ($row = $result->fetch_assoc()) {
-    $usuarios[] = ["id" => $row["id_usuario"], "vector" => json_decode($row["vector_embedding"])];
-}
-
-$conn->close();
-
-// Continuar con la lógica de comparación y ordenación del código original...
-?>
-
 
 <?php //conexion con tabla match 
 ?>
