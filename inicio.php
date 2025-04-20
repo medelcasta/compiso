@@ -38,7 +38,7 @@
             <a href="./panel_control/subir_vivienda.php" class="btn btn-info mb-2">Subir Vivienda</a>
             <a href="./panel_control/buscar_vivienda.php" class="btn btn-success mb-2">Buscar Vivienda</a>
             <a href="./panel_control/buscar_usuarios.php" class="btn btn-success mb-2">Buscar Usuario</a>
-            <a href="./matches/" class="btn btn-primary mb-2">Mostrar Matches</a>
+            <a href="./matches/mostrar_matches.php" class="btn btn-primary mb-2">Mostrar Matches</a>
         </div>
 
         <div class="mt-4">
