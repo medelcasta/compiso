@@ -22,6 +22,8 @@
     require('../utiles/conexion.php');
     require('../utiles/depurar.php');
 
+   
+
     if (!isset($_SESSION["usuario"])) {
         header("Location: ../usuario/iniciar_sesion.php");
         exit;

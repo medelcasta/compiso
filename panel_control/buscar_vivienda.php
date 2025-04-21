@@ -2,6 +2,10 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 require('../utiles/conexion.php');
+if (!isset($_SESSION["usuario"])) {
+    echo "No has iniciado sesión.";
+    exit;
+}
 ?>
 
 <!DOCTYPE html>

@@ -17,6 +17,11 @@
             <?php
                 require('../utiles/conexion.php');
 
+                if (!isset($_SESSION["usuario"])) {
+                    echo "No has iniciado sesión.";
+                    exit;
+                }
+
                 $sql = "SELECT * FROM Vivienda"; 
                 $result = $_conexion->query($sql);
 
