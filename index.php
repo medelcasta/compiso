@@ -63,8 +63,57 @@
 
                 $_conexion->close();
             ?>
+            <h4>Contacta con Nosotros</h4>
+            <?php 
+            if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                $tmp_email = depurar($_POST["email"]);
+                $tmp_nombre = depurar($_POST["nombre"]);
+                $tmp_mensaje = depurar($_POST["mensaje"]);
+
+                if ($tmp_email == '') {
+                    $err_email = "El email es obligatorio";
+                } else {
+                    if (!filter_var($tmp_email, FILTER_VALIDATE_EMAIL)) {
+                        $err_email = "Formato de email no válido";
+                    } else {
+                        $email = $tmp_email;
+                    }
+                }
+                if ($tmp_nombre == '') {
+                    $err_nombre = "El nombre es obligatorio";
+                } else {
+                    if (strlen($tmp_nombre) < 3 || strlen($tmp_nombre) > 50) {
+                        $err_nombre = "El nombre no puede contener más de 50 caracteres";
+                    } else {
+                        $nombre = $tmp_nombre;
+                    }
+                }
+                if ($tmp_mensaje == '') {
+                    $err_mensaje = "El mensaje es obligatorio";
+                } else {
+                    if (strlen($tmp_mensaje) < 10 || strlen($tmp_mensaje) > 500) {
+                        $err_mensaje = "El mensaje no puede contener más de 500 caracteres";
+                    } else {
+                        $mensaje = $tmp_mensaje;
+                    }
+                }
+                if (isset($email) && isset($nombre) && isset($mensaje)) {
+                    echo "<div class='alert alert-success'>Mensaje enviado correctamente.</div>";
+                }
+            ?>
+            <label>Nombre</label>
+            <input type="text" name="nombre" class="form-control" placeholder="Nombre" required>
+            <?php if (isset($err_nombre)) echo "<span class='text-danger'>$err_nombre</span>"; ?> <br>
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" placeholder="Email" required>
+            <?php if (isset($err_email)) echo "<span class='text-danger'>$err_email</span>"; ?> <br>
+            <label>Mensaje</label>
+            <textarea name="mensaje" class="form-control" placeholder="Mensaje" required></textarea>
+            <?php if (isset($err_mensaje)) echo "<span class='text-danger'>$err_mensaje</span>"; ?> <br>
+            <button type="submit" class="btn btn-primary mt-3">Enviar</button>
         </div>
     </main>
+    
 
     <footer class="bg-light text-center py-4 mt-5 border-top">
         <div class="container">
