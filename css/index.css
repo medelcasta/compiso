@@ -1,0 +1,57 @@
+/* ================================
+   PALETA DE COLORES PERSONALIZADA
+================================== */
+:root {
+    --color-verde: #74C69D;
+    --color-primario: #006C67;
+    --color-primario-hover: #004C47;
+    --color-secundario: #FFD166;
+    --color-secundario-hover: #e6bb3e;
+    --color-acento: #EF476F;
+    --color-fondo: #F9F9F9;
+    --color-texto: #2D2D2D;
+    --color-blanco: #ffffff;
+    --color-gris: #f1f1f1;
+    --color-borde: #dddddd;
+}
+
+/* ================================
+   CABECERA
+================================== */
+.cabecera {
+    background-color: var(--color-verde);
+}
+
+#login {
+    color: var(--color-blanco);
+    background-color: var(--color-primario);
+}
+
+#login:hover {
+    font-weight: bold;
+    background-color: var(--color-primario-hover);
+}
+
+#registro {
+    color: var(--color-texto);
+    background-color: var(--color-secundario);
+}
+
+#registro:hover {
+    font-weight: bold;
+    background-color: var(--color-secundario-hover);
+}
+
+/* ================================
+   MAIN
+================================== */
+
+#masinfo {
+    color: var(--color-blanco);
+    background-color: var(--color-primario);
+}
+
+#masinfo:hover {
+    font-weight: bold;
+    background-color: var(--color-primario-hover);
+}
