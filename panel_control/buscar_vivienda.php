@@ -2,6 +2,12 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 require('../utiles/conexion.php');
+
+session_start();
+if (!isset($_SESSION["usuario"])) {
+    echo "No has iniciado sesión.";
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -35,7 +41,7 @@ require('../utiles/conexion.php');
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["criterio"]) && trim($_POST["criterio"]) !== "") {
             $criterio = $_POST["criterio"];
 
-            $sql = $_conexion->prepare("SELECT id_vivienda, direccion, ciudad, descripcion, precio, habitaciones, baños, disponibilidad 
+            $sql = $_conexion->prepare("SELECT id_vivienda, direccion, ciudad, descripcion, precio, habitaciones, banos, disponibilidad 
                                     FROM Vivienda 
                                     WHERE direccion LIKE ? OR ciudad LIKE ?");
 
@@ -68,7 +74,7 @@ require('../utiles/conexion.php');
                         echo "<td>" . htmlspecialchars($fila["descripcion"]) . "</td>";
                         echo "<td>" . htmlspecialchars($fila["precio"]) . " €</td>";
                         echo "<td>" . htmlspecialchars($fila["habitaciones"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["baños"]) . "</td>";
+                        echo "<td>" . htmlspecialchars($fila["banos"]) . "</td>";
                         echo "<td>" . ($fila["disponibilidad"] ? "Disponible" : "No disponible") . "</td>";
                         echo '<td><a href="viviendas.php?id_vivienda=' . urlencode($fila["id_vivienda"]) . '" 
                               class="btn btn-info" title="Ver más sobre la vivienda">Ver más</a></td>';
@@ -87,8 +93,9 @@ require('../utiles/conexion.php');
         }
         $_conexion->close();
         ?>
+        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
     </div>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>

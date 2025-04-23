@@ -9,7 +9,13 @@
     error_reporting(E_ALL);
     ini_set("display_errors", 1);
 
-    require('./utiles/conexion.php');
+    require('../utiles/conexion.php');
+
+    session_start();
+    if (!isset($_SESSION["usuario"])) {
+        echo "No has iniciado sesión.";
+        exit;
+    }
     ?>
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
     <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
@@ -35,7 +41,7 @@
                 echo "<p><strong>Descripción:</strong> " . $fila["descripcion"] . "</p>";
                 echo "<p><strong>Precio:</strong> " . $fila["precio"] . " €</p>";
                 echo "<p><strong>Habitaciones:</strong> " . $fila["habitaciones"] . "</p>";
-                echo "<p><strong>Baños:</strong> " . $fila["baños"] . "</p>";
+                echo "<p><strong>Baños:</strong> " . $fila["banos"] . "</p>";
                 echo "<p><strong>Metros Cuadrados:</strong> " . $fila["metros_cuadrados"] . " m²</p>";
                 echo "<p><strong>Disponibilidad:</strong> " . ($fila["disponibilidad"] ? "Disponible" : "No disponible") . "</p>";
                 echo "<p><strong>ID del Propietario:</strong> " . $fila["id_propietario"] . "</p>";
@@ -51,6 +57,8 @@
         // Cerrar conexión
         $_conexion->close();
         ?>
+          <a class="btn btn-secondary" href="./buscar_vivienda.php">Volver</a>
     </div>
+  
 </body>
 </html>

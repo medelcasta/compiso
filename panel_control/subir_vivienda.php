@@ -10,6 +10,14 @@
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
     <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
         src="https://chatling.ai/js/embed.js"></script>
+
+    <?php 
+       session_start();
+       if (!isset($_SESSION["usuario"])) {
+           echo "No has iniciado sesión.";
+           exit;
+       }
+    ?>
 </head>
 
 <body>
@@ -54,6 +62,7 @@
             </div>
             <button type="submit" class="btn btn-primary">Subir Vivienda</button>
         </form>
+        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
     </div>
 
     <?php

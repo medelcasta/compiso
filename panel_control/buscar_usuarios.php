@@ -3,15 +3,11 @@ error_reporting(E_ALL);
 ini_set("display_errors", 1);
 require('../utiles/conexion.php');
 
-/*
-session_start();
-if (isset($_SESSION["usuario"])) {
-    echo "<h2>Bienvenid@ " . $_SESSION["usuario"] . "</h2>";
-} else {
-    header("location: usuario/iniciar_sesion.php");
+/*session_start();
+if (!isset($_SESSION["usuario"])) {
+    echo "No has iniciado sesión.";
     exit;
-}
-*/
+}*/
 ?>
 
 <!DOCTYPE html>
@@ -67,11 +63,11 @@ if (isset($_SESSION["usuario"])) {
                     echo '<tbody>';
                     while ($fila = $resultado->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . htmlspecialchars($fila["nombre"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["apellidos"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["email"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["telefono"]) . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["tipo_usuario"]) . "</td>";
+                        echo "<td>" . htmlspecialchars($fila["nombre"] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($fila["apellidos"] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($fila["email"] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($fila["telefono"] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($fila["tipo_usuario"] ?? '') . "</td>";
                         echo "</tr>";
                     }
                     echo '</tbody>';
@@ -87,6 +83,7 @@ if (isset($_SESSION["usuario"])) {
         }
         $_conexion->close();
         ?>
+        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

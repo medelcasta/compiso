@@ -63,6 +63,7 @@
         // Cerrar conexión
         $_conexion->close();
         ?>
+        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
     </div>
 </body>
 
