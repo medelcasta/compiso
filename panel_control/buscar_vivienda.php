@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 require('../utiles/conexion.php');
+require("../utiles/volver.php");
 
 session_start();
 if (!isset($_SESSION["usuario"])) {
@@ -93,7 +94,7 @@ if (!isset($_SESSION["usuario"])) {
         }
         $_conexion->close();
         ?>
-        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
+       <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

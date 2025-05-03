@@ -1,111 +1,170 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+session_start();
+if (!isset($_SESSION["usuario"])) {
+    echo "No has iniciado sesión.";
+    exit;
+}
 
+if ($_SESSION["tipo_usuario"] != '2') {
+    echo "No tienes permisos para subir viviendas.";
+    exit;
+}
+
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
+require("../utiles/conexion.php");
+require("../utiles/volver.php");
+
+// Obtener el id_usuario del usuario actual que está en sesión
+$nombre_usuario = $_SESSION["usuario"];
+$sql = "SELECT id_usuario FROM Usuario WHERE nombre = ?";
+$stmt = $_conexion->prepare($sql);
+$stmt->bind_param("s", $nombre_usuario);
+$stmt->execute();
+$resultado = $stmt->get_result();
+
+if ($resultado->num_rows == 0) {
+    echo "<div class='alert alert-danger text-center mt-3'>No se encontró el usuario en la base de datos.</div>";
+    exit;
+}
+
+$usuario = $resultado->fetch_assoc();
+$id_usuario = $usuario["id_usuario"];
+$stmt->close();
+
+// Obtener el id_propietario del usuario actual
+$sql_propietario = "SELECT id_propietario FROM Propietario WHERE id_usuario = ?";
+$stmt_propietario = $_conexion->prepare($sql_propietario);
+$stmt_propietario->bind_param("i", $id_usuario);
+$stmt_propietario->execute();
+$resultado_propietario = $stmt_propietario->get_result();
+
+if ($resultado_propietario->num_rows == 0) {
+    echo "<div class='alert alert-danger text-center mt-3'>No se encontró un propietario asociado con este usuario.</div>";
+    exit;
+}
+
+$propietario = $resultado_propietario->fetch_assoc();
+$id_propietario = $propietario["id_propietario"];
+$_SESSION["id_propietario"] = $id_propietario;
+$stmt_propietario->close();
+
+// Verifica si el id_propietario existe en la tabla Propietario
+$sql_verificar_propietario = "SELECT id_propietario FROM Propietario WHERE id_propietario = ?";
+$stmt_verificar = $_conexion->prepare($sql_verificar_propietario);
+$stmt_verificar->bind_param("i", $id_propietario);
+$stmt_verificar->execute();
+$resultado_verificar = $stmt_verificar->get_result();
+
+if ($resultado_verificar->num_rows == 0) {
+    echo "<div class='alert alert-danger text-center mt-3'>El propietario no existe en la base de datos. No se puede subir la vivienda.</div>";
+    exit;
+}
+$stmt_verificar->close();
+?>
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subir Vivienda</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
-    <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
-        src="https://chatling.ai/js/embed.js"></script>
-
-    <?php 
-       session_start();
-       if (!isset($_SESSION["usuario"])) {
-           echo "No has iniciado sesión.";
-           exit;
-       }
-    ?>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <div class="container mt-5">
         <h2>Subir información de la vivienda</h2>
         <form action="" method="POST" enctype="multipart/form-data">
+            <!-- Campos vivienda -->
             <div class="mb-3">
                 <label for="direccion" class="form-label">Dirección</label>
-                <input type="text" class="form-control" id="direccion" name="direccion" required>
+                <input type="text" class="form-control" name="direccion" required>
             </div>
             <div class="mb-3">
                 <label for="ciudad" class="form-label">Ciudad</label>
-                <input type="text" class="form-control" id="ciudad" name="ciudad" required>
+                <input type="text" class="form-control" name="ciudad" required>
             </div>
             <div class="mb-3">
                 <label for="descripcion" class="form-label">Descripción</label>
-                <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
+                <textarea class="form-control" name="descripcion"></textarea>
             </div>
             <div class="mb-3">
                 <label for="precio" class="form-label">Precio</label>
-                <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+                <input type="number" class="form-control" name="precio" step="0.01" required>
             </div>
             <div class="mb-3">
                 <label for="habitaciones" class="form-label">Habitaciones</label>
-                <input type="number" class="form-control" id="habitaciones" name="habitaciones">
+                <input type="number" class="form-control" name="habitaciones">
             </div>
             <div class="mb-3">
-                <label for="baños" class="form-label">Baños</label>
-                <input type="number" class="form-control" id="baños" name="baños">
+                <label for="banos" class="form-label">Baños</label>
+                <input type="number" class="form-control" name="banos">
             </div>
             <div class="mb-3">
-                <label for="metros_cuadrados" class="form-label">Metros Cuadrados</label>
-                <input type="number" class="form-control" id="metros_cuadrados" name="metros_cuadrados">
+                <label for="metros_cuadrados" class="form-label">Metros cuadrados</label>
+                <input type="number" class="form-control" name="metros_cuadrados">
             </div>
             <div class="mb-3">
-                <label for="disponibilidad" class="form-label">Disponibilidad (1: Disponible, 0: No Disponible)</label>
-                <input type="number" class="form-control" id="disponibilidad" name="disponibilidad" required>
+                <label for="disponibilidad" class="form-label">Disponibilidad (1: Sí, 0: No)</label>
+                <input type="number" class="form-control" name="disponibilidad" required>
             </div>
             <div class="mb-3">
                 <label for="imagenes" class="form-label">Imagen de la vivienda</label>
-                <input type="file" class="form-control" id="imagenes" name="imagenes" accept="image/*" required>
+                <input type="file" class="form-control" name="imagenes" accept="image/*" required>
             </div>
             <button type="submit" class="btn btn-primary">Subir Vivienda</button>
         </form>
-        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
+        <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
     </div>
 
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $id_vivienda = $_POST['id_vivienda'];
+        // Obtener datos del formulario
         $direccion = $_POST['direccion'];
         $ciudad = $_POST['ciudad'];
         $descripcion = $_POST['descripcion'];
         $precio = $_POST['precio'];
         $habitaciones = $_POST['habitaciones'];
-        $baños = $_POST['baños'];
+        $banos = $_POST['banos'];
         $metros_cuadrados = $_POST['metros_cuadrados'];
         $disponibilidad = $_POST['disponibilidad'];
-        $id_propietario = $_POST['id_propietario'];
         $imagen = $_FILES['imagenes'];
 
-        // Verificar y mover la imagen subida
+        // Verifica si la imagen es válida
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+        if (!in_array($imagen["type"], $allowed_types)) {
+            echo "<div class='alert alert-danger text-center mt-3'>Solo se permiten archivos de imagen válidos.</div>";
+            exit;
+        }
+
+        // Procesar imagen
         $target_dir = "uploads/";
-        $target_file = $target_dir . basename($imagen["name"]);
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0777, true);
+        }
+
+        $target_file = $target_dir . uniqid() . "-" . basename($imagen["name"]);
+
         if (move_uploaded_file($imagen["tmp_name"], $target_file)) {
-            echo "La imagen se subió correctamente.";
+            $id_vivienda = uniqid("viv_");
+
+            $stmt = $_conexion->prepare("INSERT INTO Vivienda (id_vivienda, direccion, ciudad, descripcion, precio, habitaciones, banos, metros_cuadrados, disponibilidad, imagenes, id_propietario) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssiiisssi", $id_vivienda, $direccion, $ciudad, $descripcion, $precio, $habitaciones, $banos, $metros_cuadrados, $disponibilidad, $target_file, $id_propietario);
+
+            if ($stmt->execute()) {
+                echo "<div class='alert alert-success text-center mt-3'>Vivienda subida correctamente.</div>";
+            } else {
+                echo "<div class='alert alert-danger mt-3'>Error al subir vivienda: " . $stmt->error . "</div>";
+            }
+
+            $stmt->close();
         } else {
-            echo "Hubo un error al subir la imagen.";
+            echo "<div class='alert alert-danger mt-3'>Hubo un error al subir la imagen.</div>";
         }
 
-        // Conexión a la base de datos
-        require('./utiles/conexion.php');
-
-        // Insertar los datos en la base de datos
-        $sql = "INSERT INTO Vivienda (id_vivienda, direccion, ciudad, descripcion, precio, habitaciones, baños, metros_cuadrados, disponibilidad, imagenes, id_propietario) 
-            VALUES ('$id_vivienda', '$direccion', '$ciudad', '$descripcion', '$precio', '$habitaciones', '$baños', '$metros_cuadrados', '$disponibilidad', '$target_file', '$id_propietario')";
-
-        if ($_conexion->query($sql)) {
-            echo "La vivienda se ha subido correctamente.";
-        } else {
-            echo "Error: " . $sql . "<br>" . $_conexion->error;
-        }
-
-        // Cerrar la conexión
         $_conexion->close();
     }
     ?>
-
 </body>
-
 </html>

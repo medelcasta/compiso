@@ -1,0 +1,157 @@
+/* ================================
+   PALETA DE COLORES PERSONALIZADA
+================================== */
+:root {
+    --color-verde: #74C69D;
+    --color-primario: #006C67;
+    --color-primario-hover: #004C47;
+    --color-secundario: #FFD166;
+    --color-secundario-hover: #e6bb3e;
+    --color-acento: #EF476F;
+    --color-fondo: #F9F9F9;
+    --color-texto: #2D2D2D;
+    --color-blanco: #ffffff;
+    --color-gris: #f1f1f1;
+    --color-borde: #dddddd;
+}
+
+/* ================================
+   TARJETAS
+================================== */
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: var(--color-blanco);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+/* Si queremos imagen para los botones */
+/* .card-img-top {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-bottom: 1px solid #dee2e6;
+} */
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: var(--color-blanco);
+}
+
+.card-text {
+    font-size: 1rem;
+    color: var(--color-texto);
+    margin-bottom: 0.75rem;
+}
+
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 576px) {
+    .container {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+}
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--color-fondo);
+}
+  
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+  
+.dashboard-header {
+    margin-bottom: 20px;
+}
+  
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Si queremos sidebar */
+.sidebar {
+    width: 220px;
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    -ms-border-radius: 15px;
+    -o-border-radius: 15px;
+}
+  
+  .sidebar h2 {
+    margin-bottom: 20px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin-bottom: 10px;
+  }
+  
+  .sidebar ul li a {
+    color: var(--color-blanco);
+    text-decoration: none;
+    padding: 8px;
+    display: block;
+    border-radius: 4px;
+  }
+  
+  .sidebar ul li a:hover {
+    background-color: var(--color-primario-hover);
+  }

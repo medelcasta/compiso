@@ -5,13 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cambiar Credenciales</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/jpg" href="../images/logo_compiso.ico" />
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/general.css">
+    <link rel="stylesheet" href="../css/formularios.css">
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
-<script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+    <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 </head>
 
-<body class="bg-light">
-    <p class="text-center mt-3 text-muted">Bienvenid@ <?php echo htmlspecialchars($_SESSION["usuario"]); ?>
+<body >
+    <header>
+            <div >
+                <div >
+                    <img src="../images/logo_compiso.png" alt="Logo" id="logo">
+                    <h1 id="titulo">Compiso</h1>
+                </div>
+                <div>
+                    <a href="./index.php" id="login">Cerrar sesión</a>
+                </div>
+            </div>
+    </header>
+    <p>Bienvenid@ <?php echo htmlspecialchars($_SESSION["usuario"]); ?>
 
         <?php
         require '../utiles/conexion.php';
@@ -89,56 +103,46 @@
         }
         ?>
 
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Cambiar Credenciales</h4>
-                    </div>
-                    <div class="card-body">
-                        <?php if (isset($mensaje))
-                            echo $mensaje; ?>
-                        <form action="" method="post">
-                            <input type="hidden" name="usuario" value="<?php echo htmlspecialchars($usuario); ?>">
+    <div class="form-container">
+        <div >
+            <h2>Cambiar Credenciales</h2>
+        </div>
+        <div >
+            <?php if (isset($mensaje))
+                echo $mensaje; ?>
+            <form action="" method="post">
+                <input type="hidden" name="usuario" value="<?php echo htmlspecialchars($usuario); ?>">
 
-                            <div class="mb-3">
-                                <label class="form-label">Usuario actual</label>
-                                <input type="text" class="form-control"
-                                    value="<?php echo htmlspecialchars($_SESSION["usuario"]); ?>" disabled>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Nueva contraseña</label>
-                                <input type="password" name="contrasena" class="form-control"
-                                    value="<?php echo $contrasena ?? ''; ?>" required>
-                                <?php if (isset($err_contrasena))
-                                    echo "<div class='text-danger small'>" . $err_contrasena . "</div>"; ?>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Tipo de usuario</label>
-                                <select name="tipo_usuario" class="form-select">
-                                    <option value="1">Inquilino</option>
-                                    <option value="2">Propietario</option>
-                                </select>
-                                <?php if (isset($err_tipo_usuario))
-                                    echo "<div class='text-danger small'>" . $err_tipo_usuario . "</div>"; ?>
-                            </div>
-
-                            <div class="d-flex justify-content-between">
-                                <a class="btn btn-secondary" href="../panel_control/mi_perfil.php">Volver</a>
-                                <button type="submit" class="btn btn-primary">Confirmar</button>
-                            </div>
-                        </form>
-                    </div>
+                <div >
+                    <label class="form-label">Usuario actual</label>
+                    <input type="text" 
+                        value="<?php echo htmlspecialchars($_SESSION["usuario"]); ?>" disabled>
                 </div>
 
-                </p>
-            </div>
+                <div >
+                    <label class="form-label">Nueva contraseña</label>
+                    <input type="password" name="contrasena" 
+                        value="<?php echo $contrasena ?? ''; ?>" required>
+                    <?php if (isset($err_contrasena))
+                        echo "<div class='text-danger small'>" . $err_contrasena . "</div>"; ?>
+                </div>
+
+                <div >
+                    <label>Tipo de usuario</label>
+                    <select name="tipo_usuario">
+                        <option value="1">Inquilino</option>
+                        <option value="2">Propietario</option>
+                    </select>
+                    <?php if (isset($err_tipo_usuario))
+                        echo "<div class='text-danger small'>" . $err_tipo_usuario . "</div>"; ?>
+                </div>
+
+                <div>
+                    <a href="../panel_control/mi_perfil.php">Volver</a>
+                    <button type="submit">Confirmar</button>
+                </div>
+            </form>
         </div>
     </div>
-
 </body>
-
 </html>

@@ -1,0 +1,113 @@
+body {
+  font-family: sans-serif;
+  background: #f9f9f9;
+  padding: 20px;
+  margin: 0;
+}
+
+.team {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.team img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  border-radius: 15px; /* Bordes redondeados */
+}
+
+.team img:hover {
+  transform: scale(1.05);
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 500px;
+  text-align: center;
+  position: relative;
+}
+
+.modal-content img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.modal-content h3 {
+  margin: 10px 0;
+}
+
+.modal-content p {
+  color: #444;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 22px;
+  background: none;
+  border: none;
+}
+
+.carousel-buttons {
+  display: none; /* Ocultar los botones del carrusel */
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.navigation-buttons button {
+  padding: 5px 15px;
+  cursor: pointer;
+}
+
+/* Estilo para el recuadro con efecto de luz de fondo */
+.team-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(7, 139, 14, 0.834), 0 0 50px rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  flex-direction: column;
+}
+
+/* Estilo mejorado para el texto de la historia */
+.team-container .team-description {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 18px;
+  color: #555555;
+  background: #f0f0f0;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  line-height: 1.6;
+}

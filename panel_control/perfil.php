@@ -11,6 +11,7 @@
     ini_set("display_errors", 1);
 
     require('../utiles/conexion.php');
+    require("../utiles/volver.php");
     ?>
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
     <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
@@ -50,7 +51,7 @@
                 echo "<p><strong>Descripción:</strong> " . (!empty($usuario["descripcion"]) ? $usuario["descripcion"] : "Sin descripción") . "</p>";
 
                 // Botón de Enviar Mensaje (sin funcionalidad por el momento)
-                echo '<form action="#" method="post">
+                echo '<form action="../mensajes/chat.php" method="post">
                         <button type="submit" class="btn btn-primary">Enviar mensaje</button>
                       </form>';
             } else {
@@ -63,7 +64,7 @@
         // Cerrar conexión
         $_conexion->close();
         ?>
-        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
+        <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
     </div>
 </body>
 

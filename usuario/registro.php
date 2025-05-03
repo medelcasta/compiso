@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
-    <link rel="icon" type="image/jpg" href="/images/logo_compiso.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="icon" type="image/jpg" href="../images/logo_compiso.ico" />
     <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/general.css">
+    <link rel="stylesheet" href="../css/formularios.css">
+
     <?php
     error_reporting(E_ALL);
     ini_set("display_errors", 1);
@@ -21,8 +22,21 @@
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1>Registro</h1>
+
+    <header>
+        <div >
+            <div >
+                <img src="../images/logo_compiso.png" alt="Logo" id="logo">
+                <h1 id="titulo">Compiso</h1>
+            </div>
+            <div>
+                <a href="./index.php" id="login">Cerrar sesión</a>
+            </div>
+        </div>
+    </header>
+    <div class="form-container">
+        
+    <h1>Registro</h1>
 
         <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -37,26 +51,18 @@
             $tmp_sexo = depurar($_POST["sexo"]);
             $tmp_descripcion = depurar($_POST["descripcion"]);
 
+            // Validaciones de campos
             if ($tmp_nombre == '') {
                 $err_nombre = "El nombre es obligatorio";
             } else {
-                $sql = $_conexion->prepare("SELECT * FROM Usuario WHERE nombre = ?");
-                $sql->bind_param("s", $tmp_nombre);
-                $sql->execute();
-                $resultado = $sql->get_result();
-
-                if ($resultado->num_rows == 1) {
-                    $err_nombre = "El nombre $tmp_nombre ya existe";
+                if (strlen($tmp_nombre) < 3 || strlen($tmp_nombre) > 15) {
+                    $err_nombre = "El nombre debe tener entre 3 y 15 caracteres";
                 } else {
-                    if (strlen($tmp_nombre) < 3 || strlen($tmp_nombre) > 15) {
-                        $err_nombre = "El nombre debe tener entre 3 y 15 caracteres";
+                    $patron = "/^[a-zA-Z0-9]+$/";
+                    if (!preg_match($patron, $tmp_nombre)) {
+                        $err_nombre = "El nombre solo puede contener letras y números";
                     } else {
-                        $patron = "/^[a-zA-Z0-9]+$/";
-                        if (!preg_match($patron, $tmp_nombre)) {
-                            $err_nombre = "El nombre solo puede contener letras y números";
-                        } else {
-                            $nombre = $tmp_nombre;
-                        }
+                        $nombre = $tmp_nombre;
                     }
                 }
             }
@@ -131,12 +137,14 @@
 
             $descripcion = $tmp_descripcion;
 
+            // Si los campos son correctos, inserta en la base de datos
             if (
                 isset($nombre) && isset($contrasena_cifrada) && isset($email) && isset($apellidos) &&
                 isset($telefono) && isset($tipo_usuario) && isset($fecha_nacimiento) && isset($sexo)
             ) {
-                $id_usuario = uniqid();
+                $id_usuario = uniqid(); // Generar un ID único para el usuario
 
+                // Registrar al usuario en la tabla Usuario
                 $sql = $_conexion->prepare("INSERT INTO Usuario (
                         id_usuario, nombre, contrasena, apellidos, email, telefono, tipo_usuario, fecha_nacimiento, sexo, descripcion
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -156,6 +164,33 @@
                 );
 
                 if ($sql->execute()) {
+                    // Si el registro del usuario fue exitoso, registramos en Inquilino o Propietario
+                    if ($tipo_usuario == 1) {
+                        // Tipo de usuario es Inquilino
+                        $preferencias = !empty($_POST["preferencias"]) ? depurar($_POST["preferencias"]) : NULL; // Si no se proporciona, asignar NULL
+                        $datos_bancarios_inquilino = !empty($_POST["datos_bancarios"]) ? depurar($_POST["datos_bancarios"]) : NULL; // Si no se proporciona, asignar NULL
+                        $id_inquilino = uniqid(); // Generar un ID único para el inquilino
+
+                        // Insertar en la tabla Inquilino
+                        $sql_inquilino = $_conexion->prepare("INSERT INTO Inquilino (id_inquilino, preferencias, datos_bancarios, id_usuario) VALUES (?, ?, ?, ?)");
+                        $sql_inquilino->bind_param("ssss", $id_inquilino, $preferencias, $datos_bancarios_inquilino, $id_usuario);
+                        if (!$sql_inquilino->execute()) {
+                            echo "Error al registrar al inquilino: " . $sql_inquilino->error;
+                        }
+                    } elseif ($tipo_usuario == 2) {
+                        // Tipo de usuario es Propietario
+                        $datos_bancarios_propietario = !empty($_POST["datos_bancarios"]) ? depurar($_POST["datos_bancarios"]) : NULL; // Si no se proporciona, asignar NULL
+                        $id_propietario = uniqid(); // Generar un ID único para el propietario
+
+                        // Insertar en la tabla Propietario
+                        $sql_propietario = $_conexion->prepare("INSERT INTO Propietario (id_propietario, datos_bancarios, id_usuario) VALUES (?, ?, ?)");
+                        $sql_propietario->bind_param("sss", $id_propietario, $datos_bancarios_propietario, $id_usuario);
+                        if (!$sql_propietario->execute()) {
+                            echo "Error al registrar al propietario: " . $sql_propietario->error;
+                        }
+                    }
+
+                    // Redirigir al inicio de sesión si todo fue exitoso
                     header("location: iniciar_sesion.php");
                     exit;
                 } else {
@@ -165,106 +200,119 @@
         }
         ?>
 
-        <form action="" method="post" enctype="multipart/form-data" class="mt-4">
-            <div class="mb-3">
+        <form action="" method="post" enctype="multipart/form-data" >
+            <div >
                 <label class="form-label">Nombre</label>
-                <input type="text" name="nombre" class="form-control"
+                <input type="text" name="nombre" 
                     value="<?php echo htmlspecialchars($_POST['nombre'] ?? '') ?>">
-                <?php if (isset($err_nombre))
-                    echo "<span class='text-danger'>$err_nombre</span>"; ?>
+                <?php if (isset($err_nombre)) echo "<span class='text-danger'>$err_nombre</span>"; ?>
             </div>
 
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Apellidos</label>
-                <input type="text" name="apellidos" class="form-control"
+                <input type="text" name="apellidos" 
                     value="<?php echo htmlspecialchars($_POST['apellidos'] ?? '') ?>">
-                <?php if (isset($err_apellidos))
-                    echo "<span class='text-danger'>$err_apellidos</span>"; ?>
+                <?php if (isset($err_apellidos)) echo "<span class='text-danger'>$err_apellidos</span>"; ?>
             </div>
 
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Contraseña</label>
-                <input type="password" name="contrasena" class="form-control">
-                <?php if (isset($err_contrasena))
-                    echo "<span class='text-danger'>$err_contrasena</span>"; ?>
+                <input type="password" name="contrasena" >
+                <?php if (isset($err_contrasena)) echo "<span class='text-danger'>$err_contrasena</span>"; ?>
             </div>
 
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Confirmar Contraseña</label>
-                <input type="password" name="confirmar_contrasena" class="form-control">
-                <?php if (isset($err_confirmar))
-                    echo "<span class='text-danger'>$err_confirmar</span>"; ?>
+                <input type="password" name="confirmar_contrasena" >
+                <?php if (isset($err_confirmar)) echo "<span class='text-danger'>$err_confirmar</span>"; ?>
             </div>
 
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control"
+                <input type="email" name="email" 
                     value="<?php echo htmlspecialchars($_POST['email'] ?? '') ?>">
-                <?php if (isset($err_email))
-                    echo "<span class='text-danger'>$err_email</span>"; ?>
+                <?php if (isset($err_email)) echo "<span class='text-danger'>$err_email</span>"; ?>
             </div>
 
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Teléfono</label>
-                <input type="tel" name="telefono" class="form-control"
+                <input type="tel" name="telefono" 
                     value="<?php echo htmlspecialchars($_POST['telefono'] ?? '') ?>">
-                <?php if (isset($err_telefono))
-                    echo "<span class='text-danger'>$err_telefono</span>"; ?>
+                <?php if (isset($err_telefono)) echo "<span class='text-danger'>$err_telefono</span>"; ?>
             </div>
 
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Fecha de nacimiento</label>
-                <input type="date" name="fecha_nacimiento" class="form-control"
+                <input type="date" name="fecha_nacimiento" 
                     value="<?php echo htmlspecialchars($_POST['fecha_nacimiento'] ?? '') ?>">
-                <?php if (isset($err_fecha_nacimiento))
-                    echo "<span class='text-danger'>$err_fecha_nacimiento</span>"; ?>
+                <?php if (isset($err_fecha_nacimiento)) echo "<span class='text-danger'>$err_fecha_nacimiento</span>"; ?>
             </div>
 
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Sexo</label>
-                <select name="sexo" class="form-control">
-                    <option value="">Selecciona</option>
-                    <option value="Hombre" <?php if (($_POST['sexo'] ?? '') == 'Hombre')
-                        echo 'selected'; ?>>Hombre
-                    </option>
-                    <option value="Mujer" <?php if (($_POST['sexo'] ?? '') == 'Mujer')
-                        echo 'selected'; ?>>Mujer</option>
-                    <option value="Otro" <?php if (($_POST['sexo'] ?? '') == 'Otro')
-                        echo 'selected'; ?>>Otro</option>
+                <select name="sexo" >
+                   
+                <option value="">Seleccione...</option>
+                    <option value="Hombre" <?php if (isset($_POST['sexo']) && $_POST['sexo'] == 'Hombre') echo 'selected'; ?>>Hombre</option>
+                    <option value="Mujer" <?php if (isset($_POST['sexo']) && $_POST['sexo'] == 'Mujer') echo 'selected'; ?>>Mujer</option>
+                    <option value="Otro" <?php if (isset($_POST['sexo']) && $_POST['sexo'] == 'Otro') echo 'selected'; ?>>Otro</option>
                 </select>
-                <?php if (isset($err_sexo))
-                    echo "<span class='text-danger'>$err_sexo</span>"; ?>
+                <?php if (isset($err_sexo)) echo "<span class='text-danger'>$err_sexo</span>"; ?>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Descripción (opcional)</label>
-                <textarea name="descripcion" class="form-control"
-                    rows="3"><?php echo htmlspecialchars($_POST['descripcion'] ?? '') ?></textarea>
-            </div>
-
-            <div class="mb-3">
+            <div >
                 <label class="form-label">Tipo de usuario</label>
-                <select name="tipo_usuario" class="form-control">
-                    <option value="">Selecciona</option>
-                    <option value="1" <?php if (($_POST['tipo_usuario'] ?? '') == '1')
-                        echo 'selected'; ?>>Inquilino
-                    </option>
-                    <option value="2" <?php if (($_POST['tipo_usuario'] ?? '') == '2')
-                        echo 'selected'; ?>>Propietario
-                    </option>
+                <select name="tipo_usuario" >
+                    <option value="">Seleccione...</option>
+                    <option value="1" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '1') echo 'selected'; ?>>Inquilino</option>
+                    <option value="2" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '2') echo 'selected'; ?>>Propietario</option>
                 </select>
-                <?php if (isset($err_tipo_usuario))
-                    echo "<span class='text-danger'>$err_tipo_usuario</span>"; ?>
+                <?php if (isset($err_tipo_usuario)) echo "<span class='text-danger'>$err_tipo_usuario</span>"; ?>
             </div>
 
-            <button type="submit" class="btn btn-success">Registrar</button>
-            <a href="./iniciar_sesion.php" class="btn btn-link">Ya tengo cuenta</a>
-            <a href="../index.php" class="btn btn-secondary">Volver a Inicio</a>
+            <div >
+                <label class="form-label">Descripción</label>
+                <textarea name="descripcion" ><?php echo htmlspecialchars($_POST['descripcion'] ?? '') ?></textarea>
+            </div>
+
+            <div >
+                <label class="form-label">Datos Bancarios</label>
+                <input type="text" name="datos_bancarios" 
+                    value="<?php echo htmlspecialchars($_POST['datos_bancarios'] ?? '') ?>">
+            </div>
+
+            <div  id="preferenciasContainer" style="display: none;">
+                <label class="form-label">Preferencias (solo inquilinos)</label>
+                <textarea name="preferencias" ><?php echo htmlspecialchars($_POST['preferencias'] ?? '') ?></textarea>
+            </div>
+
+            <button type="submit" >Registrarse</button>
         </form>
     </div>
 
+    <script>
+        // Mostrar u ocultar las preferencias dependiendo del tipo de usuario
+        document.querySelector('select[name="tipo_usuario"]').addEventListener('change', function() {
+            const preferenciasContainer = document.getElementById('preferenciasContainer');
+            if (this.value == '1') {
+                preferenciasContainer.style.display = 'block';
+            } else {
+                preferenciasContainer.style.display = 'none';
+            }
+        });
+
+        // Mostrar preferencias al recargar si el valor es Inquilino
+        window.addEventListener('load', function() {
+            const tipoUsuario = document.querySelector('select[name="tipo_usuario"]').value;
+            const preferenciasContainer = document.getElementById('preferenciasContainer');
+            if (tipoUsuario == '1') {
+                preferenciasContainer.style.display = 'block';
+            }
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+OJ5n1hbQpC4eYfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
 </body>
 

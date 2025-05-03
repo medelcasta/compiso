@@ -21,8 +21,8 @@
 
     require('../utiles/conexion.php');
     require('../utiles/depurar.php');
+    require("../utiles/volver.php");
 
-   
 
     if (!isset($_SESSION["usuario"])) {
         header("Location: ../usuario/iniciar_sesion.php");
@@ -77,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <a class="btn btn-secondary" href="../inicio.php">Volver</a>
+        <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
