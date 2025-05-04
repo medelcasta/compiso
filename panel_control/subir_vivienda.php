@@ -53,7 +53,7 @@ $stmt_propietario->close();
 // Verifica si el id_propietario existe en la tabla Propietario
 $sql_verificar_propietario = "SELECT id_propietario FROM Propietario WHERE id_propietario = ?";
 $stmt_verificar = $_conexion->prepare($sql_verificar_propietario);
-$stmt_verificar->bind_param("i", $id_propietario);
+$stmt_verificar->bind_param("s", $id_propietario);
 $stmt_verificar->execute();
 $resultado_verificar = $stmt_verificar->get_result();
 
@@ -130,10 +130,10 @@ $stmt_verificar->close();
         $disponibilidad = $_POST['disponibilidad'];
         $imagen = $_FILES['imagenes'];
 
-        // Verifica si la imagen es válida
+        // Validación de imagen
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
         if (!in_array($imagen["type"], $allowed_types)) {
-            echo "<div class='alert alert-danger text-center mt-3'>Solo se permiten archivos de imagen válidos.</div>";
+            echo "<div class='alert alert-danger text-center mt-3'>Formato de imagen no válido.</div>";
             exit;
         }
 
@@ -146,21 +146,16 @@ $stmt_verificar->close();
         $target_file = $target_dir . uniqid() . "-" . basename($imagen["name"]);
 
         if (move_uploaded_file($imagen["tmp_name"], $target_file)) {
-            $id_vivienda = uniqid("viv_");
-
-            $stmt = $_conexion->prepare("INSERT INTO Vivienda (id_vivienda, direccion, ciudad, descripcion, precio, habitaciones, banos, metros_cuadrados, disponibilidad, imagenes, id_propietario) 
-                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssiiisssi", $id_vivienda, $direccion, $ciudad, $descripcion, $precio, $habitaciones, $banos, $metros_cuadrados, $disponibilidad, $target_file, $id_propietario);
+            $stmt = $_conexion->prepare("INSERT INTO Vivienda (direccion, ciudad, descripcion, precio, habitaciones, banos, metros_cuadrados, disponibilidad, imagenes, id_propietario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssiiisss", $direccion, $ciudad, $descripcion, $precio, $habitaciones, $banos, $metros_cuadrados, $disponibilidad, $target_file, $id_propietario);
 
             if ($stmt->execute()) {
                 echo "<div class='alert alert-success text-center mt-3'>Vivienda subida correctamente.</div>";
             } else {
-                echo "<div class='alert alert-danger mt-3'>Error al subir vivienda: " . $stmt->error . "</div>";
+                echo "<div class='alert alert-danger mt-3'>Error: " . $stmt->error . "</div>";
             }
 
             $stmt->close();
-        } else {
-            echo "<div class='alert alert-danger mt-3'>Hubo un error al subir la imagen.</div>";
         }
 
         $_conexion->close();
@@ -168,3 +163,4 @@ $stmt_verificar->close();
     ?>
 </body>
 </html>
+

@@ -32,83 +32,89 @@
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
     <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
         src="https://chatling.ai/js/embed.js"></script>
-    <style>
-        /* Estilos generales */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #74C69D;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    /* Estilos generales */
+    body {
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4; /* Fondo general claro */
+    }
 
-        /* Contenedor principal */
-        .container {
-            max-width: 600px;
-            background-color: #198754;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-            margin: 50px auto;
-            text-align: center;
-        }
+    /* Contenedor principal */
+    .container {
+        max-width: 600px;
+        background-color:rgb(86, 174, 130); /* Fondo blanco con opacidad */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Efecto de luz y profundidad */
+        margin: 50px auto;
+        text-align: center;
+    }
 
-        /* Título */
-        h2 {
-            font-size: 24px;
-            color: white;
-            margin-bottom: 20px;
-        }
+    /* Título */
+    h2 {
+        font-size: 24px;
+        color: #333; /* Color oscuro para el texto */
+        margin-bottom: 20px;
+    }
 
-        /* Etiquetas del formulario */
-        .form-label {
-            font-size: 16px;
-            font-weight: bold;
-        }
+    /* Etiquetas del formulario */
+    .form-label {
+        font-size: 16px;
+        font-weight: bold;
+        color: #555; /* Color gris oscuro */
+    }
 
-        /* Campos de entrada */
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #74C69D;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
+    /* Campos de entrada */
+    input[type="text"] {
+        width: calc(100% - 20px); /* Ajusta el ancho para que no exceda el contenedor */
+        max-width: 100%; /* Asegura que no exceda el contenedor */
+        padding: 10px;
+        border: 2px solid #ccc; /* Borde gris claro */
+        border-radius: 5px;
+        margin-bottom: 15px;
+        box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+    }
 
-        /* Botón principal */
-        .btn-primary {
-            background-color: #74C69D;
-            border: none;
-            padding: 10px 15px;
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+    /* Botón principal */
+    .btn-primary {
+        background-color: #74C69D;
+        border: none;
+        padding: 10px 15px;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
 
-        .btn-primary:hover {
-            background-color: #198754;
-        }
+    .btn-primary:hover {
+        background-color: #198754;
+    }
 
-        /* Botón de volver */
-        .btn-secondary {
-            background-color: #0D6EFD;
-            border: none;
-            padding: 10px 15px;
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: block;
-            margin: 20px auto;
-            width: fit-content;
-        }
+    /* Botón de volver */
+    .btn-secondary {
+        background-color: #0D6EFD;
+        border: none;
+        padding: 10px 15px;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto;
+        width: fit-content;
+    }
 
-        .btn-secondary:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    .btn-secondary:hover {
+        background-color: #0056b3;
+    }
+</style>
+    
+
+  
 </head>
 
 <body>
@@ -138,10 +144,10 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Actualizar perfil</button>
+            <a class="btn btn-secondary" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
         </form>
 
-        <!-- BOTÓN VOLVER MODIFICADO -->
-        <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
+        
     </div>
 
     <?php

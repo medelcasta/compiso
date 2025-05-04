@@ -23,6 +23,128 @@ if (!isset($_SESSION["usuario"])) {
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
     <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
         src="https://chatling.ai/js/embed.js"></script>
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9; /* Fondo claro */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff; /* Fondo blanco para el contenedor */
+            padding: 20px;
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        }
+
+        h1 {
+            text-align: center;
+            color: #333; /* Color del texto */
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #555; /* Color del texto del label */
+        }
+
+        .form-control {
+            border-radius: 25px; /* Bordes redondeados */
+            padding: 10px 15px;
+            border: 1px solid #ccc; /* Borde gris claro */
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
+        }
+
+        .form-control:focus {
+            border-color: #4CAF50; /* Color verde al enfocar */
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Sombra verde */
+        }
+        .card {
+            border: none;
+            border-radius: 15px; /* Bordes redondeados */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px); /* Efecto de elevación */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Sombra más intensa */
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4CAF50; /* Color verde atractivo */
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #555; /* Color gris para el texto */
+        }
+
+       
+    .btn-primary,
+    .btn-secondary {
+        width: 100%; /* Ambos botones tendrán el mismo ancho */
+        max-width: 200px; /* Ancho máximo para evitar que sean demasiado grandes */
+        display: inline-block; /* Asegura que se comporten como elementos en línea */
+        text-align: center; /* Centra el texto dentro del botón */
+    }
+
+    .btn-primary {
+        background-color: #4CAF50; /* Color verde atractivo */
+        border: none;
+        border-radius: 25px; /* Bordes redondeados */
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff; /* Texto blanco */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #45a049; /* Color más oscuro al pasar el cursor */
+        transform: translateY(-2px); /* Efecto de elevación */
+    }
+
+    .btn-primary:active {
+        background-color: #3e8e41; /* Color más oscuro al hacer clic */
+        transform: translateY(0); /* Sin elevación */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d; /* Color gris */
+        border: none;
+        border-radius: 25px; /* Bordes redondeados */
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff; /* Texto blanco */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268; /* Color más oscuro al pasar el cursor */
+        transform: translateY(-2px); /* Efecto de elevación */
+    }
+
+    .btn-secondary:active {
+        background-color: #4e555b; /* Color más oscuro al hacer clic */
+        transform: translateY(0); /* Sin elevación */
+    }
+
+    .button-container {
+        display: flex; /* Alinea los botones en fila */
+        justify-content: center; /* Centra los botones horizontalmente */
+        gap: 15px; /* Espacio entre los botones */
+        margin-top: 20px; /* Espaciado superior */
+    }
+</style>
+         
+
 </head>
 
 <body>
@@ -32,11 +154,12 @@ if (!isset($_SESSION["usuario"])) {
 
         <form method="POST" action="">
             <div class="mb-3">
-                <label for="criterio" class="form-label">Buscar por Nombre o Email:</label>
+                <label for="criterio" class="form-label">Introduce Nombre o Email:</label>
                 <input type="text" class="form-control" id="criterio" name="criterio"
                     placeholder="Introduce nombre o email">
             </div>
             <button type="submit" class="btn btn-primary">Buscar</button>
+            <a class="btn btn-secondary" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
         </form>
 
         <?php
@@ -50,29 +173,20 @@ if (!isset($_SESSION["usuario"])) {
                 $resultado = $sql->get_result();
 
                 if ($resultado->num_rows > 0) {
-                    echo "<h2 class='mt-4'>Resultados de la búsqueda:</h2>";
-                    echo '<table class="table table-striped table-hover mt-3">';
-                    echo '<thead class="table-dark">
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Apellidos</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>
-                            <th>Tipo de Usuario</th>
-                        </tr>
-                      </thead>';
-                    echo '<tbody>';
+                    echo '<div class="row mt-3">';
                     while ($fila = $resultado->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . htmlspecialchars($fila["nombre"] ?? '') . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["apellidos"] ?? '') . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["email"] ?? '') . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["telefono"] ?? '') . "</td>";
-                        echo "<td>" . htmlspecialchars($fila["tipo_usuario"] ?? '') . "</td>";
-                        echo "</tr>";
+                        echo '<div class="col-md-12 mb-12">'; // Cada tarjeta ocupa la mitad del ancho en pantallas medianas
+                                echo '<div class="card shadow-lg" style="border-radius: 15px;">';
+                                echo '<div class="card-body">';
+                                echo '<h5 class="card-title text-primary">' . htmlspecialchars($fila["nombre"] ?? '') . ' ' . htmlspecialchars($fila["apellidos"] ?? '') . '</h5>';
+                                echo '<p class="card-text"><strong>Email:</strong> ' . htmlspecialchars($fila["email"] ?? '') . '</p>';
+                                echo '<p class="card-text"><strong>Teléfono:</strong> ' . htmlspecialchars($fila["telefono"] ?? '') . '</p>';
+                                echo '<p class="card-text"><strong>Tipo de Usuario:</strong> ' . htmlspecialchars($fila["tipo_usuario"] ?? '') . '</p>';
+                                echo '</div>';
+                                echo '</div>';
+                                echo '</div>';
                     }
-                    echo '</tbody>';
-                    echo '</table>';
+                    echo '</div>';
                 } else {
                     echo "<p class='mt-3 text-danger'>No se encontraron usuarios que coincidan con el criterio de búsqueda.</p>";
                 }
@@ -84,7 +198,7 @@ if (!isset($_SESSION["usuario"])) {
         }
         $_conexion->close();
         ?>
-        <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
+       
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
