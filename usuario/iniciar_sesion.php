@@ -25,11 +25,11 @@
     <header>
         <div >
             <div >
-                <img src="../images/logo_compiso.png" alt="Logo" id="logo">
+            <a href="../index.php"><img src="../images/logo_compiso.png" alt="Logo" id="logo"></a>
                 <h1 id="titulo">Compiso</h1>
             </div>
             <div>
-                <a href="./index.php" id="login">Cerrar sesión</a>
+                <a href="../index.php" id="login">Volver</a>
             </div>
         </div>
     </header>
@@ -38,7 +38,20 @@
         <h1>Inicio Sesión</h1>
 
         <?php
+        
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // Consultar la suscripción del usuario
+            $sql = $_conexion->prepare("SELECT suscripcion FROM Usuario WHERE email = ?");
+            $sql->bind_param("s", $email);
+            $sql->execute();
+            $resultado = $sql->get_result();
+            $datos_usuario = $resultado->fetch_assoc();
+
+            if ($datos_usuario["suscripcion"] == "gratuito" && $tipo_usuario == "1") {
+                header("Location: pago.php"); // Redirigir a la página de pago
+                exit;
+            }
+
             $tmp_email = depurar($_POST["email"]);
             $tmp_contrasena = depurar($_POST["contrasena"]);
 
@@ -122,7 +135,8 @@
 
             <button type="submit">Iniciar sesión</button>
             <a  href="../index.php">Volver a Inicio</a>
-            <a href="../usuario/recuperar_contrasena.php" >¿Olvidaste la contraseña?</a>
+            <a  href="formulario_pago.php">Premium</a>
+            <a href="./recuperar_contrasena.php" >¿Olvidaste la contraseña?</a>
 
         </form>
     </div>

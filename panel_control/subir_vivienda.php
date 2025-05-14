@@ -16,7 +16,7 @@ ini_set("display_errors", 1);
 require("../utiles/conexion.php");
 require("../utiles/volver.php");
 
-// Obtener el id_usuario del usuario actual que está en sesión
+// Obtener el id_usuario del usuario actual
 $nombre_usuario = $_SESSION["usuario"];
 $sql = "SELECT id_usuario FROM Usuario WHERE nombre = ?";
 $stmt = $_conexion->prepare($sql);
@@ -49,19 +49,6 @@ $propietario = $resultado_propietario->fetch_assoc();
 $id_propietario = $propietario["id_propietario"];
 $_SESSION["id_propietario"] = $id_propietario;
 $stmt_propietario->close();
-
-// Verifica si el id_propietario existe en la tabla Propietario
-$sql_verificar_propietario = "SELECT id_propietario FROM Propietario WHERE id_propietario = ?";
-$stmt_verificar = $_conexion->prepare($sql_verificar_propietario);
-$stmt_verificar->bind_param("s", $id_propietario);
-$stmt_verificar->execute();
-$resultado_verificar = $stmt_verificar->get_result();
-
-if ($resultado_verificar->num_rows == 0) {
-    echo "<div class='alert alert-danger text-center mt-3'>El propietario no existe en la base de datos. No se puede subir la vivienda.</div>";
-    exit;
-}
-$stmt_verificar->close();
 ?>
 
 <!DOCTYPE html>
@@ -75,7 +62,6 @@ $stmt_verificar->close();
     <div class="container mt-5">
         <h2>Subir información de la vivienda</h2>
         <form action="" method="POST" enctype="multipart/form-data">
-            <!-- Campos vivienda -->
             <div class="mb-3">
                 <label for="direccion" class="form-label">Dirección</label>
                 <input type="text" class="form-control" name="direccion" required>
@@ -114,12 +100,10 @@ $stmt_verificar->close();
             </div>
             <button type="submit" class="btn btn-primary">Subir Vivienda</button>
         </form>
-        <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
     </div>
 
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Obtener datos del formulario
         $direccion = $_POST['direccion'];
         $ciudad = $_POST['ciudad'];
         $descripcion = $_POST['descripcion'];
@@ -131,7 +115,7 @@ $stmt_verificar->close();
         $imagen = $_FILES['imagenes'];
 
         // Validación de imagen
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!in_array($imagen["type"], $allowed_types)) {
             echo "<div class='alert alert-danger text-center mt-3'>Formato de imagen no válido.</div>";
             exit;
@@ -143,24 +127,37 @@ $stmt_verificar->close();
             mkdir($target_dir, 0777, true);
         }
 
-        $target_file = $target_dir . uniqid() . "-" . basename($imagen["name"]);
+        $file_name = uniqid() . "-" . basename($imagen["name"]);
+        $target_file = $target_dir . $file_name;
 
-        if (move_uploaded_file($imagen["tmp_name"], $target_file)) {
-            $stmt = $_conexion->prepare("INSERT INTO Vivienda (direccion, ciudad, descripcion, precio, habitaciones, banos, metros_cuadrados, disponibilidad, imagenes, id_propietario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssiiisss", $direccion, $ciudad, $descripcion, $precio, $habitaciones, $banos, $metros_cuadrados, $disponibilidad, $target_file, $id_propietario);
+        // Verificar si la imagen se mueve correctamente al servidor
+        if (!move_uploaded_file($imagen["tmp_name"], $target_file)) {
+            echo "<div class='alert alert-danger text-center mt-3'>Error al mover la imagen al servidor.</div>";
+            echo "<pre>";
+            print_r(error_get_last());
+            echo "</pre>";
+            exit;
+        } else {
+            echo "<div class='alert alert-success text-center mt-3'>Imagen subida correctamente: " . htmlspecialchars($file_name) . "</div>";
+        }
+        
 
-            if ($stmt->execute()) {
-                echo "<div class='alert alert-success text-center mt-3'>Vivienda subida correctamente.</div>";
-            } else {
-                echo "<div class='alert alert-danger mt-3'>Error: " . $stmt->error . "</div>";
-            }
 
-            $stmt->close();
+        // Guardar solo el nombre del archivo en la base de datos
+        $stmt = $_conexion->prepare("INSERT INTO Vivienda (direccion, ciudad, descripcion, precio, habitaciones, banos, metros_cuadrados, disponibilidad, imagenes, id_propietario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssiiisss", $direccion, $ciudad, $descripcion, $precio, $habitaciones, $banos, $metros_cuadrados, $disponibilidad, $file_name, $id_propietario);
+
+        if ($stmt->execute()) {
+            echo "<div class='alert alert-success text-center mt-3'>Vivienda subida correctamente.</div>";
+        } else {
+            echo "<div class='alert alert-danger mt-3'>Error: " . $stmt->error . "</div>";
         }
 
+        $stmt->close();
         $_conexion->close();
     }
     ?>
+     <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
 </body>
 </html>
 

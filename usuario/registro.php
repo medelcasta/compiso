@@ -50,6 +50,7 @@
             $tmp_fecha_nacimiento = $_POST["fecha_nacimiento"];
             $tmp_sexo = depurar($_POST["sexo"]);
             $tmp_descripcion = depurar($_POST["descripcion"]);
+            $imagen = $_FILES['imagenes'];
 
             // Validaciones de campos
             if ($tmp_nombre == '') {
@@ -137,6 +138,35 @@
 
             $descripcion = $tmp_descripcion;
 
+             // Validación de imagen
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($imagen["type"], $allowed_types)) {
+            echo "<div class='alert alert-danger text-center mt-3'>Formato de imagen no válido.</div>";
+            exit;
+        }
+
+        // Procesar imagen
+        $target_dir = "uploads/";
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0777, true);
+        }
+
+        $file_name = uniqid() . "-" . basename($imagen["name"]);
+        $target_file = $target_dir . $file_name;
+
+        // Verificar si la imagen se mueve correctamente al servidor
+        if (!move_uploaded_file($imagen["tmp_name"], $target_file)) {
+            echo "<div class='alert alert-danger text-center mt-3'>Error al mover la imagen al servidor.</div>";
+            echo "<pre>";
+            print_r(error_get_last());
+            echo "</pre>";
+            exit;
+        } else {
+            echo "<div class='alert alert-success text-center mt-3'>Imagen subida correctamente: " . htmlspecialchars($file_name) . "</div>";
+            
+        }
+        echo "<div class='alert alert-info'>Ruta completa destino: $target_file</div>";
+
             // Si los campos son correctos, inserta en la base de datos
             if (
                 isset($nombre) && isset($contrasena_cifrada) && isset($email) && isset($apellidos) &&
@@ -146,11 +176,11 @@
 
                 // Registrar al usuario en la tabla Usuario
                 $sql = $_conexion->prepare("INSERT INTO Usuario (
-                        id_usuario, nombre, contrasena, apellidos, email, telefono, tipo_usuario, fecha_nacimiento, sexo, descripcion
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        id_usuario, nombre, contrasena, apellidos, email, telefono, tipo_usuario, fecha_nacimiento, sexo, descripcion, imagen
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
 
                 $sql->bind_param(
-                    "ssssssisss",
+                    "ssssssissss",
                     $id_usuario,
                     $nombre,
                     $contrasena_cifrada,
@@ -160,7 +190,8 @@
                     $tipo_usuario,
                     $fecha_nacimiento,
                     $sexo,
-                    $descripcion
+                    $descripcion,
+                    $target_file
                 );
 
                 if ($sql->execute()) {
@@ -260,15 +291,19 @@
                 <?php if (isset($err_sexo)) echo "<span class='text-danger'>$err_sexo</span>"; ?>
             </div>
 
-            <div >
+            <div>
                 <label class="form-label">Tipo de usuario</label>
-                <select name="tipo_usuario" >
-                    <option value="">Seleccione...</option>
-                    <option value="1" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '1') echo 'selected'; ?>>Inquilino</option>
-                    <option value="2" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '2') echo 'selected'; ?>>Propietario</option>
-                </select>
+                <div>
+                    <input type="radio" id="inquilino" name="tipo_usuario" value="1" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '1') echo 'checked'; ?>>
+                    <label for="inquilino">Inquilino</label>
+                </div>
+                <div>
+                    <input type="radio" id="propietario" name="tipo_usuario" value="2" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '2') echo 'checked'; ?>>
+                    <label for="propietario">Propietario</label>
+                </div>
                 <?php if (isset($err_tipo_usuario)) echo "<span class='text-danger'>$err_tipo_usuario</span>"; ?>
             </div>
+
 
             <div >
                 <label class="form-label">Descripción</label>
@@ -284,6 +319,11 @@
             <div  id="preferenciasContainer" style="display: none;">
                 <label class="form-label">Preferencias (solo inquilinos)</label>
                 <textarea name="preferencias" ><?php echo htmlspecialchars($_POST['preferencias'] ?? '') ?></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="imagenes" class="form-label">Foto del usuario </label>
+                <input type="file" class="form-control" name="imagenes" accept="image/*" required>
             </div>
 
             <button type="submit" >Registrarse</button>

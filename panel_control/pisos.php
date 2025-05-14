@@ -14,55 +14,95 @@
     <div class="container mt-4">
         <h1 class="header text-center">Compiso</h1>
         <div class="row">
-            <?php
-                require('../utiles/conexion.php');
-                require("../utiles/volver.php");
+        <?php
+    require('../utiles/conexion.php');
+    require("../utiles/volver.php");
 
-                session_start();
-                if (!isset($_SESSION["usuario"])) {
-                    echo "No has iniciado sesión.";
-                    exit;
-                }
+    session_start();
+    if (!isset($_SESSION["usuario"])) {
+        echo "No has iniciado sesión.";
+        exit;
+    }
 
-                error_reporting(E_ALL);
-                ini_set("display_errors", 1);
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
 
-                $sql = "SELECT * FROM Vivienda"; 
-                $result = $_conexion->query($sql);
+    // Obtener el id_usuario de la sesión
+    $nombre_usuario = $_SESSION["usuario"];
+    $sql_usuario = "SELECT id_usuario FROM Usuario WHERE nombre = ?";
+    $stmt_usuario = $_conexion->prepare($sql_usuario);
+    $stmt_usuario->bind_param("s", $nombre_usuario);
+    $stmt_usuario->execute();
+    $resultado_usuario = $stmt_usuario->get_result();
 
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo '<div class="col-md-4 mb-4">';
-                        echo '<div class="card h-100">';
+    if ($resultado_usuario->num_rows == 0) {
+        echo "<p class='text-center'>No se encontró el usuario en la base de datos.</p>";
+        exit;
+    }
 
-                        // Verifica si la imagen existe en la carpeta uploads, si no, usa una imagen por defecto
-                        $imagen = !empty($row["imagenes"]) ? $row["imagenes"] : 'default.jpg';
-                        $ruta_imagen = "uploads/" . $imagen;
-                        
-                        if (!file_exists($ruta_imagen)) {
-                            $ruta_imagen = "uploads/default.jpg"; // Imagen de respaldo
-                        }
+    $usuario = $resultado_usuario->fetch_assoc();
+    $id_usuario = $usuario["id_usuario"];
+    $stmt_usuario->close();
 
-                        echo '<img src="' . htmlspecialchars($ruta_imagen) . '" class="card-img-top" alt="Imagen de la vivienda">';
-                        echo '<div class="card-body">';
-                        echo '<h5 class="card-title">' . htmlspecialchars($row["direccion"]) . ', ' . htmlspecialchars($row["ciudad"]) . '</h5>';
-                        echo '<p class="card-text"><strong>Descripción:</strong> ' . htmlspecialchars($row["descripcion"]) . '</p>';
-                        echo '<p class="card-text"><strong>Precio:</strong> ' . $row["precio"] . ' €</p>';
-                        echo '<p class="card-text"><strong>Habitaciones:</strong> ' . $row["habitaciones"] . '</p>';
-                        echo '<p class="card-text"><strong>Baños:</strong> ' . $row["banos"] . '</p>';
-                        echo '<p class="card-text"><strong>Metros cuadrados:</strong> ' . $row["metros_cuadrados"] . ' m²</p>';
-                        echo '<p class="card-text"><strong>Disponibilidad:</strong> ' . ($row["disponibilidad"] ? 'Disponible' : 'No disponible') . '</p>';
-                        echo '<a href="./usuario/iniciar_sesion.php" class="btn btn-primary mt-2">Más Info</a>';
-                        echo '</div>';
-                        echo '</div>';
-                        echo '</div>';
-                    }
-                } else {
-                    echo "<p class='text-center'>No se encontraron viviendas.</p>";
-                }
+    // Obtener el id_propietario correspondiente al usuario
+    $sql_propietario = "SELECT id_propietario FROM Propietario WHERE id_usuario = ?";
+    $stmt_propietario = $_conexion->prepare($sql_propietario);
+    $stmt_propietario->bind_param("i", $id_usuario);
+    $stmt_propietario->execute();
+    $resultado_propietario = $stmt_propietario->get_result();
 
-                $_conexion->close();
-            ?>
+    if ($resultado_propietario->num_rows == 0) {
+        echo "<p class='text-center'>No se encontraron propiedades asociadas a este usuario.</p>";
+        exit;
+    }
+
+    $propietario = $resultado_propietario->fetch_assoc();
+    $id_propietario = $propietario["id_propietario"];
+    $stmt_propietario->close();
+
+    // Filtrar viviendas por id_propietario
+    $sql = "SELECT * FROM Vivienda WHERE id_propietario = ?";
+    $stmt_vivienda = $_conexion->prepare($sql);
+    $stmt_vivienda->bind_param("i", $id_propietario);
+    $stmt_vivienda->execute();
+    $result = $stmt_vivienda->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo '<div class="col-md-4 mb-4">';
+            echo '<div class="card h-100">';
+            
+            $imagen = !empty($row["imagenes"]) ? $row["imagenes"] : 'default.jpg';
+            $ruta_web = "https://compiso.infy.uk/panel_control/uploads/" . $imagen;
+            $ruta_local = $_SERVER['DOCUMENT_ROOT'] . "/panel_control/uploads/" . $imagen;
+            
+            if (!file_exists($ruta_local)) {
+                $ruta_web = "https://compiso.infy.uk/panel_control/uploads/default.jpg";
+            }
+            
+            echo '<img src="' . htmlspecialchars($ruta_web) . '" class="card-img-top" alt="Imagen de la vivienda">';
+            echo '<div class="card-body">';
+            echo '<h5 class="card-title">' . htmlspecialchars($row["direccion"]) . ', ' . htmlspecialchars($row["ciudad"]) . '</h5>';
+            echo '<p class="card-text"><strong>Descripción:</strong> ' . htmlspecialchars($row["descripcion"]) . '</p>';
+            echo '<p class="card-text"><strong>Precio:</strong> ' . $row["precio"] . ' €</p>';
+            echo '<p class="card-text"><strong>Habitaciones:</strong> ' . $row["habitaciones"] . '</p>';
+            echo '<p class="card-text"><strong>Baños:</strong> ' . $row["banos"] . '</p>';
+            echo '<p class="card-text"><strong>Metros cuadrados:</strong> ' . $row["metros_cuadrados"] . ' m²</p>';
+            echo '<p class="card-text"><strong>Disponibilidad:</strong> ' . ($row["disponibilidad"] ? 'Disponible' : 'No disponible') . '</p>';
+            echo '<a href="./usuario/iniciar_sesion.php" class="btn btn-primary mt-2">Más Info</a>';
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+        }
+    } else {
+        echo "<p class='text-center'>No se encontraron viviendas para este usuario.</p>";
+    }
+
+    $stmt_vivienda->close();
+    $_conexion->close();
+?>
+
+
         </div>
         <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
     </div>

@@ -4,14 +4,11 @@ ini_set("display_errors", 1);
 
 require '../utiles/conexion.php';
 require '../utiles/depurar.php';
-require '../utiles/phpmailer_load.php';
 session_start();
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 $mensaje = "";
 
+// Lógica para procesar el formulario de recuperación
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tmp_email = depurar($_POST["email"]);
 
@@ -39,38 +36,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql_token->bind_param("sss", $email, $token, $expiracion);
             $sql_token->execute();
 
-            // Configuración y envío del correo con PHPMailer
-            $mail = new PHPMailer(true);
+            // Preparar datos para enviar con EmailJS desde el navegador (JS)
+            $_SESSION["pendiente_email"] = $email;
+            $_SESSION["pendiente_usuario"] = $usuario;
+            $_SESSION["pendiente_link"] = "http://compiso.infy.uk/usuario/reestablecer_contrasena.php?token=$token";
 
-            try {
-                $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
-                $mail->SMTPAuth = true;
-                $mail->Username = 'compiso2425@gmail.com'; // Tu correo Gmail
-                $mail->Password = 'eirg orqm olwd kzhx'; // Contraseña de aplicación
-                $mail->SMTPSecure = 'tls';
-                $mail->Port = 587;
-
-                $mail->setFrom('compiso2425@gmail.com', 'Compiso');
-                $mail->addAddress($email, $usuario);
-
-                $mail->isHTML(true);
-                $mail->Subject = 'Recuperación de contraseña';
-                $enlace = "http://compiso.infy.uk/usuario/recuperar_contrasena.php?token=$token";
-                $mail->Body = "
-                    <p>Hola <strong>$usuario</strong>,</p>
-                    <p>Haz clic en el siguiente enlace para cambiar tu contraseña:</p>
-                    <p><a href='$enlace'>$enlace</a></p>
-                    <p>Este enlace expirará en 1 hora.</p>
-                    <p>Si no solicitaste este cambio, ignora este mensaje.</p>
-                ";
-                $mail->AltBody = "Hola $usuario, visita este enlace para recuperar tu contraseña: $enlace";
-
-                $mail->send();
-                $mensaje = "<div class='alert alert-success mt-3'>Se ha enviado un enlace de recuperación a tu correo electrónico.</div>";
-            } catch (Exception $e) {
-                $mensaje = "<div class='alert alert-danger mt-3'>Error al enviar correo: {$mail->ErrorInfo}</div>";
-            }
+            header("Location: ../utiles/enviar_emailjs.html");
+            exit;
         } else {
             $mensaje = "<div class='alert alert-danger mt-3'>El correo electrónico no está registrado.</div>";
         }
@@ -79,3 +51,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <link rel="icon" type="image/jpg" href="../images/logo_compiso.ico" />
+    <link rel="stylesheet" href="../css/sesiones.css">
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/general.css">
+    <link rel="stylesheet" href="../css/formularios.css">
+</head>
+<body>
+    <header>
+        <div>
+            <div>
+            <a href="../index.php"><img src="../images/logo_compiso.png" alt="Logo" id="logo"></a>
+                <h1 id="titulo">Compiso</h1>
+            </div>
+            <div>
+                <a href="./index.php" id="login">Cerrar sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h1>Recuperar Contraseña</h1>
+
+        <!-- Mensaje de error si el email no está registrado -->
+        <?php if ($mensaje) echo $mensaje; ?>
+
+        <!-- Formulario de recuperación de contraseña -->
+        <form action="" method="post">
+            <div>
+                <label for="email">Correo Electrónico</label><br>
+                <input type="email" name="email" id="email" size="20px" value="<?php echo isset($tmp_email) ? htmlspecialchars($tmp_email) : ''; ?>">
+                <?php if (isset($err_email)) echo "<span class='text-danger'>$err_email</span>"; ?>
+            </div>
+
+            <button type="submit">Enviar enlace de recuperación</button>
+        </form>
+
+        <a href="index.php">Volver a inicio</a>
+    </div>
+
+</body>
+
+</html>

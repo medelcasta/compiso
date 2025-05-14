@@ -122,7 +122,7 @@ main {
     padding: 2rem;
 }
 
-a {
+.enlace {
     display: inline-block;
     font-weight: 400;
     color: var(--color-blanco);
@@ -142,7 +142,7 @@ a {
     cursor: pointer;
 }
 
-a:hover {
+.enlace:hover {
     color: var(--color-blanco);
     font-weight: bold;
     background-color: var(--color-primario-hover);

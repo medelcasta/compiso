@@ -4,7 +4,11 @@ include "similitud.php";
 include "../utiles/conexion.php";
 
 // Clave de Cohere
-$cohere_api_key = "eOXxc1z4XGq0jYEcaLZirJcJ62SMSoHOILrHhDhr";
+$cohere_api_key = "Ez2MpXNBBfFe4LxthbeFj5Ne9npfWNq0PLRpWoOU";
+// API NUEVA cLP5vlcg5D3qiS6LgpB9wCn2A8Wa0ihAjLdp2PMd
+// API ANTIGUA eOXxc1z4XGq0jYEcaLZirJcJ62SMSoHOILrHhDhr
+//jFrOFJxd1BxzLDQGckJhPp6aMxdD1bPEmiObMyUx
+//Pq38StlpD4n7F4HxbHCI23G5eJjzhrVn5oUwkwSR
 
 // Descripción del nuevo usuario
 $descripcion_usuario = "SELECT descripcion FROM Usuario";

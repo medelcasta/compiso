@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enviando correo...</title>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      // Inicializa EmailJS con el user ID
+      emailjs.init("4ffStSi1GG4niqwgL"); 
+
+      fetch("session_data.php")
+        .then((res) => res.json())
+        .then((data) => {
+          const templateParams = {
+            nombre: data.usuario,
+            email: data.email,
+            enlaceRecuperacion: data.link,
+          };
+
+          // Enviar el correo con EmailJS
+          emailjs.send("service_jc4gtoj", "template_jor91ch", templateParams)
+            .then(() => {
+              alert("Correo enviado correctamente. Revisa tu bandeja.");
+              window.location.href = "../index.php";  // Redirigir al inicio
+            })
+            .catch((error) => {
+              alert("Error al enviar el correo: " + error.text);
+              window.location.href = "../index.php";  // Redirigir al inicio
+            });
+        });
+    });
+  </script>
+</head>
+<body>
+  <p>Enviando correo de recuperación...</p>
+</body>
+</html>

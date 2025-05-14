@@ -23,10 +23,10 @@ if (!isset($_SESSION["usuario"])) {
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
     <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
         src="https://chatling.ai/js/embed.js"></script>
-        <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9; /* Fondo claro */
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
         }
@@ -34,122 +34,128 @@ if (!isset($_SESSION["usuario"])) {
         .container {
             max-width: 800px;
             margin: 50px auto;
-            background: #fff; /* Fondo blanco para el contenedor */
+            background: #fff;
             padding: 20px;
-            border-radius: 10px; /* Bordes redondeados */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
-            color: #333; /* Color del texto */
+            color: #333;
             margin-bottom: 20px;
         }
 
         .form-label {
             font-weight: bold;
-            color: #555; /* Color del texto del label */
+            color: #555;
         }
 
         .form-control {
-            border-radius: 25px; /* Bordes redondeados */
+            border-radius: 25px;
             padding: 10px 15px;
-            border: 1px solid #ccc; /* Borde gris claro */
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .form-control:focus {
-            border-color: #4CAF50; /* Color verde al enfocar */
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Sombra verde */
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
         }
+
         .card {
             border: none;
-            border-radius: 15px; /* Bordes redondeados */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-5px); /* Efecto de elevación */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Sombra más intensa */
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .card-title {
-            font-size: 1.5rem;
+        .card-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            font-size: 1.25rem;
             font-weight: bold;
-            color: #4CAF50; /* Color verde atractivo */
+            border-bottom: 1px solid #3e8e41;
+        }
+
+        .card-body {
+            padding: 20px;
+            background-color: #fff;
         }
 
         .card-text {
             font-size: 1rem;
-            color: #555; /* Color gris para el texto */
+            color: #555;
         }
 
-       
-    .btn-primary,
-    .btn-secondary {
-        width: 100%; /* Ambos botones tendrán el mismo ancho */
-        max-width: 200px; /* Ancho máximo para evitar que sean demasiado grandes */
-        display: inline-block; /* Asegura que se comporten como elementos en línea */
-        text-align: center; /* Centra el texto dentro del botón */
-    }
+        .card-footer {
+            background-color: #f1f1f1;
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
 
-    .btn-primary {
-        background-color: #4CAF50; /* Color verde atractivo */
-        border: none;
-        border-radius: 25px; /* Bordes redondeados */
-        padding: 10px 20px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #fff; /* Texto blanco */
-        transition: background-color 0.3s ease, transform 0.2s ease;
-    }
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+            max-width: 200px;
+            display: inline-block;
+            text-align: center;
+        }
 
-    .btn-primary:hover {
-        background-color: #45a049; /* Color más oscuro al pasar el cursor */
-        transform: translateY(-2px); /* Efecto de elevación */
-    }
+        .btn-primary {
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
 
-    .btn-primary:active {
-        background-color: #3e8e41; /* Color más oscuro al hacer clic */
-        transform: translateY(0); /* Sin elevación */
-    }
+        .btn-primary:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
 
-    .btn-secondary {
-        background-color: #6c757d; /* Color gris */
-        border: none;
-        border-radius: 25px; /* Bordes redondeados */
-        padding: 10px 20px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #fff; /* Texto blanco */
-        transition: background-color 0.3s ease, transform 0.2s ease;
-    }
+        .btn-primary:active {
+            background-color: #3e8e41;
+            transform: translateY(0);
+        }
 
-    .btn-secondary:hover {
-        background-color: #5a6268; /* Color más oscuro al pasar el cursor */
-        transform: translateY(-2px); /* Efecto de elevación */
-    }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
 
-    .btn-secondary:active {
-        background-color: #4e555b; /* Color más oscuro al hacer clic */
-        transform: translateY(0); /* Sin elevación */
-    }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
 
-    .button-container {
-        display: flex; /* Alinea los botones en fila */
-        justify-content: center; /* Centra los botones horizontalmente */
-        gap: 15px; /* Espacio entre los botones */
-        margin-top: 20px; /* Espaciado superior */
-    }
-</style>
-         
-
+        .btn-secondary:active {
+            background-color: #4e555b;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 
 <body>
     <div class="container mt-5">
-        <!--<a class="btn btn-warning mb-3" href="usuario/cerrar_sesion.php">Cerrar sesión</a>-->
         <h1 class="mb-4">Búsqueda de Usuario</h1>
 
         <form method="POST" action="">
@@ -159,32 +165,54 @@ if (!isset($_SESSION["usuario"])) {
                     placeholder="Introduce nombre o email">
             </div>
             <button type="submit" class="btn btn-primary">Buscar</button>
+            <button type="submit" class="btn btn-primary" name="mostrar_todos" value="1">Mostrar todos</button>
             <a class="btn btn-secondary" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
         </form>
 
         <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["criterio"]) && $_POST["criterio"] !== "") {
-            $criterio = $_POST["criterio"];
-            $sql = $_conexion->prepare("SELECT * FROM Usuario WHERE nombre LIKE ? OR email LIKE ?");
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && (isset($_POST["criterio"]) || isset($_POST["mostrar_todos"]))) {
+            $criterio = $_POST["criterio"] ?? '';
+            if (isset($_POST["mostrar_todos"])) {
+                $sql = $_conexion->prepare("SELECT * FROM Usuario");
+            } else {
+                $sql = $_conexion->prepare("SELECT * FROM Usuario WHERE nombre LIKE ? OR email LIKE ?");
+            }
+
             if ($sql) {
-                $param = "%$criterio%";
-                $sql->bind_param("ss", $param, $param);
+                if (!isset($_POST["mostrar_todos"])) {
+                    $param = "%$criterio%";
+                    $sql->bind_param("ss", $param, $param);
+                }
                 $sql->execute();
                 $resultado = $sql->get_result();
 
                 if ($resultado->num_rows > 0) {
                     echo '<div class="row mt-3">';
                     while ($fila = $resultado->fetch_assoc()) {
-                        echo '<div class="col-md-12 mb-12">'; // Cada tarjeta ocupa la mitad del ancho en pantallas medianas
-                                echo '<div class="card shadow-lg" style="border-radius: 15px;">';
-                                echo '<div class="card-body">';
-                                echo '<h5 class="card-title text-primary">' . htmlspecialchars($fila["nombre"] ?? '') . ' ' . htmlspecialchars($fila["apellidos"] ?? '') . '</h5>';
-                                echo '<p class="card-text"><strong>Email:</strong> ' . htmlspecialchars($fila["email"] ?? '') . '</p>';
-                                echo '<p class="card-text"><strong>Teléfono:</strong> ' . htmlspecialchars($fila["telefono"] ?? '') . '</p>';
-                                echo '<p class="card-text"><strong>Tipo de Usuario:</strong> ' . htmlspecialchars($fila["tipo_usuario"] ?? '') . '</p>';
-                                echo '</div>';
-                                echo '</div>';
-                                echo '</div>';
+                        echo '<div class="col-md-12 mb-4">';
+                        echo '<div class="card shadow-lg">';
+                        echo '<div class="card-header">';
+                        if ($fila["tipo_usuario"] == 1) {
+                            echo '<img src="../images/inquilino.png" width="50px">';
+                        } elseif ($fila["tipo_usuario"] == 2) {
+                            echo '<img src="../images/propietario.png" width="50px">';
+                        } else {
+                            echo '<img src="../images/administrador.png" width="50px">';
+                        }
+                        echo htmlspecialchars($fila["nombre"] ?? '') . ' ' . htmlspecialchars($fila["apellidos"] ?? '');
+                        echo '</div>';
+                        echo '<div class="card-body">';
+                        echo '<p class="card-text"><img src="../images/email.png" width="30px"> ' . htmlspecialchars($fila["email"] ?? '') . '</p>';
+                        echo '<p class="card-text"><img src="../images/movil.png" width="30px"> ' . htmlspecialchars($fila["telefono"] ?? '') . '</p>';
+                        echo '</div>';
+                        echo '<div class="card-footer">';
+
+                        echo '<a href="../conversaciones/dialogo.php?usuario_id=' . urlencode($fila["id_usuario"]) . '" class="btn btn-primary">Enviar mensaje</a>';
+
+                        echo '<a href="perfil_o.php?usuario_id=' . urlencode($fila["id_usuario"]) . '" class="btn btn-secondary">Ver perfil</a>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '</div>';
                     }
                     echo '</div>';
                 } else {
@@ -198,7 +226,7 @@ if (!isset($_SESSION["usuario"])) {
         }
         $_conexion->close();
         ?>
-       
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
