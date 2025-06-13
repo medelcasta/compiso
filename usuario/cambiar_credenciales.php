@@ -3,16 +3,22 @@ session_start();
 require('../utiles/conexion.php');
 
 if (!isset($_SESSION["usuario"])) {
-    header("Location: ../login.php");
+    header("Location: iniciar_sesion.php");
     exit;
 }
 
 $usuario = $_SESSION["usuario"];
+$id_usuario = $usuario["id_usuario"];
 $mensaje = "";
 
+// Variables por defecto
+$contrasena = "";
+$tipo_usuario = "";
+$descripcion = "";
+
 // Obtener los datos actuales del usuario
-$sql = $_conexion->prepare("SELECT contrasena, tipo_usuario, descripcion FROM Usuario WHERE nombre = ?");
-$sql->bind_param("s", $usuario);
+$sql = $_conexion->prepare("SELECT contrasena, tipo_usuario, descripcion FROM Usuario WHERE id_usuario = ?");
+$sql->bind_param("s", $id_usuario);
 $sql->execute();
 $resultado = $sql->get_result();
 
@@ -27,34 +33,32 @@ if ($fila = $resultado->fetch_assoc()) {
 
 // Procesar el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nueva_contrasena = $_POST["contrasena"];
-    $nuevo_tipo_usuario = $_POST["tipo_usuario"];
-    $nueva_descripcion = $_POST["descripcion"];
+    $nueva_contrasena = $_POST["contrasena"] ?? "";
+    $nueva_descripcion = $_POST["descripcion"] ?? "";
+    $nuevo_tipo_usuario = $tipo_usuario; // No se cambia desde el formulario
 
-    // Validar los datos
+    // Validaciones
     $errores = false;
+
     if (strlen($nueva_contrasena) < 6) {
         $err_contrasena = "La contraseña debe tener al menos 6 caracteres.";
         $errores = true;
     }
 
-    if (!in_array($nuevo_tipo_usuario, [1, 2])) {
-        $err_tipo_usuario = "El tipo de usuario no es válido.";
-        $errores = true;
-    }
-
-    if (empty($nueva_descripcion)) {
+    if (empty(trim($nueva_descripcion))) {
         $err_descripcion = "La descripción no puede estar vacía.";
         $errores = true;
     }
 
-    // Si no hay errores, actualizar los datos
     if (!$errores) {
-        $sql_update = $_conexion->prepare("UPDATE Usuario SET contrasena = ?, tipo_usuario = ?, descripcion = ? WHERE nombre = ?");
-        $sql_update->bind_param("siss", $nueva_contrasena, $nuevo_tipo_usuario, $nueva_descripcion, $usuario);
+        $sql_update = $_conexion->prepare("UPDATE Usuario SET contrasena = ?, descripcion = ? WHERE id_usuario = ?");
+        $sql_update->bind_param("sss", $nueva_contrasena, $nueva_descripcion, $id_usuario);
 
         if ($sql_update->execute()) {
             $mensaje = "<div class='alert alert-success'>Credenciales actualizadas correctamente.</div>";
+            // Refrescar valores mostrados en el formulario
+            $contrasena = $nueva_contrasena;
+            $descripcion = $nueva_descripcion;
         } else {
             $mensaje = "<div class='alert alert-danger'>Error al actualizar las credenciales.</div>";
         }
@@ -82,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background: #ffffff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 30px;
         }
 
         h2 {
@@ -106,46 +110,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
     <div class="container">
-        <div>
-            <h2>Cambiar Credenciales</h2>
-        </div>
-        <div>
-            <?php if (isset($mensaje)) echo $mensaje; ?>
-            <form action="" method="post">
-                <input type="hidden" name="usuario" value="<?php echo htmlspecialchars($usuario); ?>">
+        <h2>Cambiar Credenciales</h2>
 
-                <div>
-                    <label class="form-label">Usuario actual</label>
-                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($_SESSION["usuario"]); ?>" disabled>
-                </div>
+        <?php if (!empty($mensaje)) echo $mensaje; ?>
 
-                <div>
-                    <label class="form-label">Nueva contraseña</label>
-                    <input type="password" class="form-control" name="contrasena" value="<?php echo $contrasena ?? ''; ?>" required>
-                    <?php if (isset($err_contrasena)) echo "<div class='text-danger'>" . $err_contrasena . "</div>"; ?>
-                </div>
+        <form action="" method="post" novalidate>
+            <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($id_usuario); ?>">
 
-                <div>
-                    <label class="form-label">Tipo de usuario</label>
-                    <select name="tipo_usuario" class="form-select">
-                        <option value="1" <?php echo (isset($tipo_usuario) && $tipo_usuario == 1) ? 'selected' : ''; ?>>Inquilino</option>
-                        <option value="2" <?php echo (isset($tipo_usuario) && $tipo_usuario == 2) ? 'selected' : ''; ?>>Propietario</option>
-                    </select>
-                    <?php if (isset($err_tipo_usuario)) echo "<div class='text-danger'>" . $err_tipo_usuario . "</div>"; ?>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">ID de usuario</label>
+                <input type="text" class="form-control" value="<?php echo htmlspecialchars($id_usuario); ?>" disabled>
+            </div>
 
-                <div>
-                    <label class="form-label">Descripción</label>
-                    <textarea name="descripcion" class="form-control" rows="4" required><?php echo htmlspecialchars($descripcion ?? ''); ?></textarea>
-                    <?php if (isset($err_descripcion)) echo "<div class='text-danger'>" . $err_descripcion . "</div>"; ?>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Nueva contraseña</label>
+                <input type="password" class="form-control" name="contrasena" value="<?php echo htmlspecialchars($contrasena); ?>" required>
+                <?php if (isset($err_contrasena)) echo "<div class='text-danger'>$err_contrasena</div>"; ?>
+            </div>
 
-                <div class="text-end">
-                    <a href="../panel_control/mi_perfil.php" class="btn btn-secondary">Volver</a>
-                    <button type="submit" class="btn btn-primary">Confirmar</button>
-                </div>
-            </form>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea name="descripcion" class="form-control" rows="4" required><?php echo htmlspecialchars($descripcion); ?></textarea>
+                <?php if (isset($err_descripcion)) echo "<div class='text-danger'>$err_descripcion</div>"; ?>
+            </div>
+
+            <div class="text-end">
+                <a href="../panel_control/mi_perfil.php" class="btn btn-secondary">Volver</a>
+                <button type="submit" class="btn btn-primary">Confirmar</button>
+            </div>
+        </form>
     </div>
 </body>
 

@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Pago</title>
+    <!--<link rel="stylesheet" href="../css/estilos.css" />
+    <link rel="stylesheet" href="../css/general.css" />
+    <link rel="stylesheet" href="../css/formularios.css" />-->
+    <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
+  <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+</head>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,6 +67,7 @@
             <input type="hidden" name="precio" value="10.00"> <!-- Precio fijo o dinámico -->
 
             <button type="submit"><a href="./procesar_pago.php">Pagar</a></button>
+            <a href="../index.php" id="login">Volver</a>
         </form>
     </div>
 </body>

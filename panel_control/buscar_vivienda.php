@@ -18,202 +18,113 @@ if (!isset($_SESSION["usuario"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Búsqueda de Vivienda</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mint: '#74C69D',
+                        tealCustom: '#40916c'
+                    }
+                }
+            }
+        }
+    </script>
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
-    <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-control {
-            border-radius: 25px;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-control:focus {
-            border-color: #4CAF50;
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-        }
-
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            font-weight: bold;
-        }
-
-        .card-body {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 15px;
-            background-color: #f9f9f9;
-        }
-
-        .left-section, .right-section {
-            flex: 1 1 50%;
-            padding: 10px;
-        }
-
-        .left-section {
-            border-right: 1px solid #ddd;
-        }
-
-        .card-footer {
-            background-color: #e8f5e9;
-            padding: 15px;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-        }
-
-        .card-text img {
-            margin-right: 8px;
-        }
-
-        .btn-primary, .btn-secondary {
-            width: 100%;
-            max-width: 200px;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            transform: translateY(-2px);
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-    </style>
+    <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
+        src="https://chatling.ai/js/embed.js"></script>
 </head>
 
-<body>
-<div class="container mt-5">
-    <h1 class="mb-4">Búsqueda de Vivienda</h1>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-3xl mx-auto mt-12 bg-white p-8 rounded-2xl shadow">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Búsqueda de Vivienda</h1>
 
-    <form method="POST" action="">
-        <div class="mb-3">
-            <label for="criterio" class="form-label">Buscar por Dirección o Ciudad:</label>
-            <input type="text" class="form-control" id="criterio" name="criterio" placeholder="Introduce dirección o ciudad">
-        </div>
-        <div class="button-container">
-            <button type="submit" class="btn btn-primary">Buscar</button>
-            <a class="btn btn-secondary" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
-            <br>
-        </div>
-    </form>
+        <form method="POST" action="" class="space-y-6">
+            <div>
+                <label for="criterio" class="block text-sm font-semibold text-gray-700">Buscar por Dirección o
+                    Ciudad:</label>
+                <input type="text" id="criterio" name="criterio" placeholder="Introduce dirección o ciudad"
+                    class="mt-2 w-full px-5 py-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-mint">
+            </div>
+            <div class="flex flex-wrap gap-4">
+                <button type="submit"
+                    class="flex-1 bg-mint hover:bg-tealCustom text-white font-semibold py-2 px-4 rounded-full transition-transform transform hover:-translate-y-1">
+                    Buscar
+                </button>
+                <button type="submit" name="mostrar_todos" value="1"
+                    class="flex-1 bg-mint hover:bg-tealCustom text-white font-semibold py-2 px-4 rounded-full transition-transform transform hover:-translate-y-1">
+                    Mostrar todos
+                </button>
+                <a href="<?php echo obtenerEnlaceVolver(); ?>"
+                    class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-full text-center transition-transform transform hover:-translate-y-1">
+                    Volver
+                </a>
+            </div>
+        </form>
 
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["criterio"]) && trim($_POST["criterio"]) !== "") {
-        $criterio = $_POST["criterio"];
+        <?php
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && (isset($_POST["criterio"]) || isset($_POST["mostrar_todos"]))) {
+            $criterio = $_POST["criterio"] ?? '';
+            if (isset($_POST["mostrar_todos"])) {
+                $sql = $_conexion->prepare("SELECT * FROM Vivienda");
+            } else {
+                $sql = $_conexion->prepare("SELECT * FROM Vivienda WHERE direccion LIKE ? OR ciudad LIKE ?");
+            }
 
-        $sql = $_conexion->prepare("SELECT id_vivienda, direccion, ciudad, descripcion, precio, habitaciones, banos, disponibilidad FROM Vivienda WHERE direccion LIKE ? OR ciudad LIKE ?");
+            if ($sql) {
+                if (!isset($_POST["mostrar_todos"])) {
+                    $param = "%$criterio%";
+                    $sql->bind_param("ss", $param, $param);
+                }
+                $sql->execute();
+                $resultado = $sql->get_result();
 
-        if ($sql) {
-            $param = "%$criterio%";
-            $sql->bind_param("ss", $param, $param);
-            $sql->execute();
-            $resultado = $sql->get_result();
+                if ($resultado->num_rows > 0) {
+                    while ($row = $resultado->fetch_assoc()) {
+                        echo '<div class="col-md-4 mb-4">'; // Reduciendo el tamaño de las tarjetas
+                        echo '<div class="card" style="max-width: 300px;">'; // Limitar el tamaño máximo
+        
+                        $imagen = !empty($row["imagenes"]) ? $row["imagenes"] : 'default.jpg';
+                        $ruta_web = "https://compiso.infy.uk/panel_control/uploads/" . $imagen;
 
-            if ($resultado->num_rows > 0) {
-                while ($fila = $resultado->fetch_assoc()) {
-                    echo '<div class="card shadow-lg">';
-                    echo '<div class="card-header">' . htmlspecialchars($fila["direccion"] ?? '') . ' - ' . htmlspecialchars($fila["ciudad"] ?? '') . '</div>';
-                    echo '<div class="card-body">';
-                    echo '<div class="left-section">';
-                    echo '<p class="card-text"><img src="../images/precio.png" width="30px"> ' . htmlspecialchars($fila["precio"] ?? '') . '</p>';
-                    echo '<p class="card-text"><strong>Disponibilidad:</strong> ';
-                    echo $fila["disponibilidad"] ? '<img src="../images/disponible.png" width="30px">' : '<img src="../images/ocupado.png" width="30px">';
-                    echo '</p>';
-                    echo '</div>';
-                    echo '<div class="right-section">';
-                    echo '<p class="card-text"><img src="../images/habitaciones.png" width="30px"> ' . htmlspecialchars($fila["habitaciones"] ?? '') . '</p>';
-                    echo '<p class="card-text"><img src="../images/banos.png" width="30px"> ' . htmlspecialchars($fila["banos"] ?? '') . '</p>';
-                    echo '</div>';
-                    echo '</div>';
-                    echo '<div class="card-footer">';
-                    echo '<p class="card-text"><strong>Descripción:</strong> ' . htmlspecialchars($fila["descripcion"] ?? '') . '</p>';
-                    echo '</div>';
+                        $ruta_local = $_SERVER['DOCUMENT_ROOT'] . "/panel_control/uploads/" . $imagen;
+
+                        if (!file_exists($ruta_local)) {
+                            $ruta_web = "https://compiso.infy.uk/panel_control/uploads/default.jpg";
+                        }
+
+                        echo '<img src="' . htmlspecialchars($ruta_web) . '" class="card-img-top" alt="Imagen de la vivienda" style="width: 100%; height: 180px; object-fit: cover;">'; // Ajustando la imagen
+                        echo '<div class="bg-white rounded-2xl shadow-md p-6">';
+                        echo '<h2 class="text-xl font-semibold text-mint mb-2">' . htmlspecialchars($row["direccion"] ?? '') . ' - ' . htmlspecialchars($fila["ciudad"] ?? '') . '</h2>';
+                        echo '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">';
+                        echo '<div>';
+                        echo $row["disponibilidad"] ? '<img src="../images/disponible.png" width="30px">' : '<img src="../images/ocupado.png" width="30px">';
+                        echo '</p>';
+                        echo '</div>';
+                        echo '</div>';
+                        echo '<p class="mt-4 text-gray-600"><strong>Descripción:</strong> ' . htmlspecialchars($row["descripcion"] ?? '') . '</p>';
+                        echo '</div>';
+                        echo '<div class="mt-4 text-right">';
+                        echo '<a href="../panel_control/detalles_piso.php?id_vivienda=' . urlencode($row["id_vivienda"]) . '" class="inline-block bg-tealCustom text-white px-4 py-2 rounded-full hover:bg-mint transition-transform transform hover:-translate-y-1">';
+                        echo 'Ver más';
+                        echo '</a>';
+                        echo '</div>';
+                    }
                     echo '</div>';
                 }
             } else {
-                echo "<p class='mt-3 text-danger'>No se encontraron viviendas que coincidan con el criterio de búsqueda.</p>";
+                echo "<p class='text-center'>No se encontraron viviendas.</p>";
             }
 
             $sql->close();
         } else {
-            echo "<p class='text-danger'>Error al preparar la consulta.</p>";
+            // echo "<p class='text-red-600 mt-6'>Error al preparar la consulta.</p>";
         }
-    }
-    $_conexion->close();
-    ?>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        $_conexion->close();
+        ?>
+    </div>
 </body>
+
 </html>

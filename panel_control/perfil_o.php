@@ -5,147 +5,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información del Usuario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
     <?php
     error_reporting(E_ALL);
     ini_set("display_errors", 1);
     require('../utiles/conexion.php');
     require("../utiles/volver.php");
     ?>
-    <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
-    <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
     <style>
         body {
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
+            background-image: url('https://www.transparenttextures.com/patterns/cartographer.png');
+            background-color: #74c69d;
         }
 
-        .container {
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 800px;
-            margin: 50px auto;
+        .enlarge-img {
+            transition: transform 0.3s ease;
         }
 
-        h1 {
-            text-align: center;
-            color: #343a40;
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .profile-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .profile-container img {
-            flex-shrink: 0;
-            width: 150px;
-            height: auto;
-        }
-
-        .profile-details {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .profile-description {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #495057;
-            text-align: justify;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            border-color: #545b62;
+        .enlarge-img:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 
-<body>
-    <div class="container mt-5">
-        <?php
-        if (isset($_GET["usuario_id"])) {
-            $id_usuario = $_GET["usuario_id"];
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-4xl w-full bg-white rounded-xl shadow-lg overflow-hidden p-6">
+            <?php
+            if (isset($_GET["usuario_id"])) {
+                $id_usuario = $_GET["usuario_id"];
 
-            $sql = $_conexion->prepare("SELECT nombre, apellidos, email, telefono, tipo_usuario, descripcion, imagen FROM Usuario WHERE id_usuario = ?");
-            $sql->bind_param("s", $id_usuario);
-            $sql->execute();
-            $resultado = $sql->get_result();
+                $sql = $_conexion->prepare("SELECT nombre, apellidos, email, telefono, tipo_usuario, descripcion, imagen, sexo 
+                                            FROM Usuario WHERE id_usuario = ?");
+                $sql->bind_param("s", $id_usuario);
+                $sql->execute();
+                $resultado = $sql->get_result();
 
-            if ($resultado->num_rows > 0) {
-                $usuario = $resultado->fetch_assoc();
+                if ($resultado->num_rows > 0) {
+                    $usuario = $resultado->fetch_assoc();
 
-                echo "<h1>Usuario ";
-                if ($usuario["tipo_usuario"] == 1) {
-                    echo '<img src="../images/inquilino.png" width="50px">';
-                } elseif ($usuario["tipo_usuario"] == 2) {
-                    echo '<img src="../images/propietario.png" width="50px">';
+                    $tipo_icono = match ($usuario["tipo_usuario"]) {
+                        "1" => "../images/inquilino.png",
+                        "2" => "../images/propietario.png",
+                        default => "../images/administrador.png"
+                    };
+
+                    $genero_icono = (strtolower($usuario["sexo"]) === "mujer") ? "💁‍♀️" : "💁‍♂️";
+                    $ruta_imagen = '../usuario/' . trim($usuario["imagen"]);
+                    $imagen_src = (!empty(trim($usuario["imagen"])) && file_exists($ruta_imagen)) ? $ruta_imagen : '../images/mujer.jpg';
+
+                    echo '<div class="flex flex-col md:flex-row items-start gap-6">';
+                    
+                    // Foto a la izquierda
+                    echo '<div class="flex-shrink-0">';
+                    echo '<img src="' . $imagen_src . '" alt="Foto de perfil" class="w-40 h-40 rounded-full object-cover shadow-lg cursor-pointer hover:scale-105 transition duration-300" onclick="ampliarImagen(\'' . $imagen_src . '\')">';
+                    echo '</div>';
+
+                    // Información a la derecha
+                    echo '<div class="flex-1">';
+                    echo '<h1 class="text-2xl font-semibold text-gray-800 flex items-center gap-3 mb-4">';
+                    echo htmlspecialchars($usuario["nombre"] . ' ' . $usuario["apellidos"]);
+                    echo '<img src="' . $tipo_icono . '" alt="tipo" class="w-8 h-8">';
+                    echo '</h1>';
+
+                    echo '<div class="space-y-3 text-gray-700">';
+                    echo '<p class="flex items-center gap-3"><img src="../images/email.png" class="w-6"> ' . htmlspecialchars($usuario["email"]) . '</p>';
+                    echo '<p class="flex items-center gap-3"><img src="../images/movil.png" class="w-6"> ' . htmlspecialchars($usuario["telefono"]) . '</p>';
+                    echo '<p class="flex items-center gap-3"> ' . $genero_icono . htmlspecialchars($usuario["sexo"]) . '</p>';
+                    echo '</div>';
+                    echo '</div>';
+
+                    echo '</div>'; // Fin del flex principal
+
+                    // Descripción y botones
+                    echo '<div class="mt-6">';
+                    echo '<p class="text-gray-800 text-sm font-semibold mb-1">Descripción:</p>';
+                    echo '<p class="text-gray-700 text-justify mb-4">' . (!empty($usuario["descripcion"]) ? htmlspecialchars($usuario["descripcion"]) : 'Sin descripción') . '</p>';
+
+                    echo '<div class="flex flex-col sm:flex-row justify-center items-center gap-4">';
+                    echo '<form action="../conversaciones/dialogo.php" method="post">';
+                    echo '<input type="hidden" name="usuario_id" value="' . htmlspecialchars($id_usuario) . '">';
+                    echo '<button type="submit" class="bg-[#74C69D] text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-[#5fb88a] transition">Enviar mensaje</button>';
+                    echo '</form>';
+                    echo '<a href="buscar_usuarios.php" class="bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded-full shadow hover:bg-gray-400 transition">Volver</a>';
+                    echo '</div>';
+                    echo '</div>';
+
                 } else {
-                    echo '<img src="../images/administrador.png" width="50px">';
-                }
-                echo "</h1>";
-
-                echo "<h4 class='card-title'>" . htmlspecialchars($usuario["nombre"] . ' ' . $usuario["apellidos"]) . "</h4>";
-
-                echo "<div class='profile-container mt-4'>";
-                if (!empty($usuario["imagen"])) {
-                    echo '<img src="../uploads/' . htmlspecialchars($usuario["imagen"]) . '" class="img-thumbnail mb-3" alt="Foto de perfil">';
-                } else {
-                    echo '<img src="../images/mujer.jpg" class="img-thumbnail mb-3" width="150px" alt="Foto de perfil predeterminada">';
+                    echo "<p class='p-4 text-center'>No se encontró información para el usuario seleccionado.</p>";
                 }
 
-                echo "<div class='profile-details'>";
-                echo "<p><img src='../images/email.png' width='30px'> " . htmlspecialchars($usuario["email"]) . "</p>";
-                echo "<p><img src='../images/movil.png' width='30px'> " . htmlspecialchars($usuario["telefono"]) . "</p>";
-                echo "</div></div>";
-
-                echo "<p class='profile-description'><strong>Descripción:</strong> " . (!empty($usuario["descripcion"]) ? htmlspecialchars($usuario["descripcion"]) : "Sin descripción") . "</p>";
-
-                echo '<form action="../mensajes/chat.php" method="post">
-                        <input type="hidden" name="usuario_id" value="' . htmlspecialchars($id_usuario) . '">
-                        <div class="mt-4 text-end">
-                            <button type="submit" class="btn btn-primary">Enviar mensaje</button>
-                            <a class="btn btn-secondary" href="' . obtenerEnlaceVolver() . '">Volver</a>
-                        </div>
-                      </form>';
+                $sql->close();
             } else {
-                echo "<p>No se encontró información para el usuario seleccionado.</p>";
+                echo "<p class='p-4 text-center'>Usuario no encontrado.</p>";
             }
 
-            $sql->close();
-        } else {
-            echo "<p>Usuario no encontrado.</p>";
+            $_conexion->close();
+            ?>
+        </div>
+    </div>
+
+    <!-- Modal para imagen ampliada -->
+    <div id="modal-imagen" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden items-center justify-center">
+        <div class="bg-white p-4 rounded-lg shadow-lg max-w-lg w-full relative">
+            <button onclick="cerrarModal()" class="absolute top-2 right-2 text-gray-700 hover:text-red-500 text-xl">&times;</button>
+            <img id="imagen-ampliada" src="" alt="Imagen Ampliada" class="w-full h-auto rounded-lg">
+        </div>
+    </div>
+
+    <script>
+        function ampliarImagen(src) {
+            document.getElementById('imagen-ampliada').src = src;
+            document.getElementById('modal-imagen').classList.remove('hidden');
+            document.getElementById('modal-imagen').classList.add('flex');
         }
 
-        $_conexion->close();
-        ?>
-    </div>
+        function cerrarModal() {
+            document.getElementById('modal-imagen').classList.add('hidden');
+            document.getElementById('modal-imagen').classList.remove('flex');
+        }
+    </script>
 </body>
 
 </html>

@@ -16,8 +16,10 @@ ini_set("display_errors", 1);
 require("../utiles/conexion.php");
 require("../utiles/volver.php");
 
-// Obtener el id_usuario del usuario actual
-$nombre_usuario = $_SESSION["usuario"];
+
+$datos_usuario = $_SESSION["usuario"];
+$nombre_usuario = $datos_usuario["nombre"];
+
 $sql = "SELECT id_usuario FROM Usuario WHERE nombre = ?";
 $stmt = $_conexion->prepare($sql);
 $stmt->bind_param("s", $nombre_usuario);
@@ -33,10 +35,9 @@ $usuario = $resultado->fetch_assoc();
 $id_usuario = $usuario["id_usuario"];
 $stmt->close();
 
-// Obtener el id_propietario del usuario actual
 $sql_propietario = "SELECT id_propietario FROM Propietario WHERE id_usuario = ?";
 $stmt_propietario = $_conexion->prepare($sql_propietario);
-$stmt_propietario->bind_param("i", $id_usuario);
+$stmt_propietario->bind_param("s", $id_usuario);
 $stmt_propietario->execute();
 $resultado_propietario = $stmt_propietario->get_result();
 
@@ -57,6 +58,8 @@ $stmt_propietario->close();
     <meta charset="UTF-8">
     <title>Subir Vivienda</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
+  <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -130,7 +133,6 @@ $stmt_propietario->close();
         $file_name = uniqid() . "-" . basename($imagen["name"]);
         $target_file = $target_dir . $file_name;
 
-        // Verificar si la imagen se mueve correctamente al servidor
         if (!move_uploaded_file($imagen["tmp_name"], $target_file)) {
             echo "<div class='alert alert-danger text-center mt-3'>Error al mover la imagen al servidor.</div>";
             echo "<pre>";
@@ -140,10 +142,8 @@ $stmt_propietario->close();
         } else {
             echo "<div class='alert alert-success text-center mt-3'>Imagen subida correctamente: " . htmlspecialchars($file_name) . "</div>";
         }
-        
 
-
-        // Guardar solo el nombre del archivo en la base de datos
+        // Guardar en BD
         $stmt = $_conexion->prepare("INSERT INTO Vivienda (direccion, ciudad, descripcion, precio, habitaciones, banos, metros_cuadrados, disponibilidad, imagenes, id_propietario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssiiisss", $direccion, $ciudad, $descripcion, $precio, $habitaciones, $banos, $metros_cuadrados, $disponibilidad, $file_name, $id_propietario);
 
@@ -157,7 +157,8 @@ $stmt_propietario->close();
         $_conexion->close();
     }
     ?>
-     <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
+    <div class="text-center">
+        <a class="btn btn-secondary mt-3" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
+    </div>
 </body>
 </html>
-

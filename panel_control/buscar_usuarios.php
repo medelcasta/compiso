@@ -1,16 +1,3 @@
-<?php
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-require('../utiles/conexion.php');
-require("../utiles/volver.php");
-
-session_start();
-if (!isset($_SESSION["usuario"])) {
-    echo "No has iniciado sesión.";
-    exit;
-}
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -18,162 +5,77 @@ if (!isset($_SESSION["usuario"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Búsqueda de Usuario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mint: '#74C69D',
+                        tealCustom: '#40916c'
+                    }
+                }
+            }
+        }
+    </script>
     <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
     <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
         src="https://chatling.ai/js/embed.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-control {
-            border-radius: 25px;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-control:focus {
-            border-color: #4CAF50;
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-        }
-
-        .card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .card-header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            font-size: 1.25rem;
-            font-weight: bold;
-            border-bottom: 1px solid #3e8e41;
-        }
-
-        .card-body {
-            padding: 20px;
-            background-color: #fff;
-        }
-
-        .card-text {
-            font-size: 1rem;
-            color: #555;
-        }
-
-        .card-footer {
-            background-color: #f1f1f1;
-            padding: 15px;
-            text-align: center;
-            border-top: 1px solid #ddd;
-        }
-
-        .btn-primary,
-        .btn-secondary {
-            width: 100%;
-            max-width: 200px;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-        }
-
-        .btn-primary:active {
-            background-color: #3e8e41;
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary:active {
-            background-color: #4e555b;
-            transform: translateY(0);
-        }
-    </style>
 </head>
 
-<body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Búsqueda de Usuario</h1>
+<body class="bg-gray-100 font-sans">
+    
+    <?php
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+    session_set_cookie_params(['path' => '/']);
+    session_start();
 
-        <form method="POST" action="">
-            <div class="mb-3">
-                <label for="criterio" class="form-label">Introduce Nombre o Email:</label>
-                <input type="text" class="form-control" id="criterio" name="criterio"
-                    placeholder="Introduce nombre o email">
+    require('../utiles/conexion.php');
+    require("../utiles/volver.php");
+
+    if (!isset($_SESSION["usuario"]) || !is_array($_SESSION["usuario"])) {
+        echo "<div class='text-center mt-10 text-red-500 font-semibold'>Sesión inválida o usuario no autenticado.</div>";
+        exit;
+    }
+    ?>
+
+    <div class="max-w-3xl mx-auto mt-12 bg-white p-8 rounded-2xl shadow">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Búsqueda de Usuario</h1>
+
+        <form method="POST" action="" class="space-y-6">
+            <div>
+                <label for="criterio" class="block text-sm font-semibold text-gray-700">Introduce Nombre o
+                    Email:</label>
+                <input type="text" id="criterio" name="criterio" placeholder="Introduce nombre o email"
+                    class="mt-2 w-full px-5 py-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-mint">
             </div>
-            <button type="submit" class="btn btn-primary">Buscar</button>
-            <button type="submit" class="btn btn-primary" name="mostrar_todos" value="1">Mostrar todos</button>
-            <a class="btn btn-secondary" href="<?php echo obtenerEnlaceVolver(); ?>">Volver</a>
+            <div class="flex flex-wrap gap-4">
+                <button type="submit"
+                    class="flex-1 bg-mint hover:bg-tealCustom text-white font-semibold py-2 px-4 rounded-full transition-transform transform hover:-translate-y-1">
+                    Buscar
+                </button>
+                <button type="submit" name="mostrar_todos" value="1"
+                    class="flex-1 bg-mint hover:bg-tealCustom text-white font-semibold py-2 px-4 rounded-full transition-transform transform hover:-translate-y-1">
+                    Mostrar todos
+                </button>
+                <a href="<?php echo obtenerEnlaceVolver(); ?>"
+                    class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-full text-center transition-transform transform hover:-translate-y-1">
+                    Volver
+                </a>
+            </div>
         </form>
 
         <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && (isset($_POST["criterio"]) || isset($_POST["mostrar_todos"]))) {
-            $criterio = $_POST["criterio"] ?? '';
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $criterio = trim($_POST["criterio"] ?? '');
+
             if (isset($_POST["mostrar_todos"])) {
                 $sql = $_conexion->prepare("SELECT * FROM Usuario");
+            } elseif ($criterio === '') {
+                echo "<p class='mt-6 text-red-600'>Debes introducir un nombre o email para buscar.</p>";
+                $_conexion->close();
+                return;
             } else {
                 $sql = $_conexion->prepare("SELECT * FROM Usuario WHERE nombre LIKE ? OR email LIKE ?");
             }
@@ -183,55 +85,50 @@ if (!isset($_SESSION["usuario"])) {
                     $param = "%$criterio%";
                     $sql->bind_param("ss", $param, $param);
                 }
+
                 $sql->execute();
                 $resultado = $sql->get_result();
 
                 if ($resultado->num_rows > 0) {
-                    echo '<div class="row mt-3">';
-                    while ($fila = $resultado->fetch_assoc()) {
-                        echo '<div class="col-md-12 mb-4">';
-                        echo '<div class="card shadow-lg">';
-                        echo '<div class="card-header">';
-                        if ($fila["tipo_usuario"] == 1) {
-                            echo '<img src="../images/inquilino.png" width="50px">';
-                        } elseif ($fila["tipo_usuario"] == 2) {
-                            echo '<img src="../images/propietario.png" width="50px">';
-                        } else {
-                            echo '<img src="../images/administrador.png" width="50px">';
-                        }
-                        echo htmlspecialchars($fila["nombre"] ?? '') . ' ' . htmlspecialchars($fila["apellidos"] ?? '');
-                        echo '</div>';
-                        echo '<div class="card-body">';
-                        echo '<p class="card-text"><img src="../images/email.png" width="30px"> ' . htmlspecialchars($fila["email"] ?? '') . '</p>';
-                        echo '<p class="card-text"><img src="../images/movil.png" width="30px"> ' . htmlspecialchars($fila["telefono"] ?? '') . '</p>';
-                        echo '</div>';
-                        echo '<div class="card-footer">';
+                    while ($row = $resultado->fetch_assoc()) {
+                        $id = urlencode($row["id_usuario"]);
+                        $foto = trim(str_replace("uploads/", "", $row["imagen"]));
+                        $ruta_relativa = "../usuario/uploads/" . htmlspecialchars($foto);
 
-                        echo '<a href="../conversaciones/dialogo.php?usuario_id=' . urlencode($fila["id_usuario"]) . '" class="btn btn-primary">Enviar mensaje</a>';
+                        echo '<div class="col-md-4 mb-4">';
+                        echo '  <div class="card shadow-sm rounded-lg overflow-hidden transition transform hover:scale-105">';
+                        echo '      <div class="relative">';
+                        echo '          <img src="' . $ruta_relativa . '" class="card-img-top rounded-full mx-auto mt-4 border-2 border-gray-300" alt="Usuario" style="width: 100px; height: 100px; object-fit: cover;">';
+                        echo '      </div>';
+                        echo '      <div class="card-body text-center py-4">';
+                        echo '          <h5 class="font-bold text-lg text-gray-800">' . htmlspecialchars($row["nombre"]) . '</h5>';
+                        echo '      </div>';
+                        echo '<a href="perfil_o.php?usuario_id=' . $id . '" class="group block text-center">Más Info</a>';
+                        echo '  </div>';
+                        echo '</div>';
 
-                        echo '<a href="perfil_o.php?usuario_id=' . urlencode($fila["id_usuario"]) . '" class="btn btn-secondary">Ver perfil</a>';
-                        echo '</div>';
-                        echo '</div>';
-                        echo '</div>';
+
+
+
                     }
-                    echo '</div>';
                 } else {
-                    echo "<p class='mt-3 text-danger'>No se encontraron usuarios que coincidan con el criterio de búsqueda.</p>";
+                    echo "<div class='alert alert-warning'>No se encontraron usuarios.</div>";
                 }
+
+
+
 
                 $sql->close();
             } else {
-                echo "<p class='mt-3 text-danger'>Error en la consulta preparada.</p>";
+                echo "<p class='mt-6 text-red-600'>Error en la consulta preparada.</p>";
             }
         }
+
         $_conexion->close();
         ?>
 
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    
 </body>
 
 </html>

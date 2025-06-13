@@ -2,358 +2,353 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registro - Compiso</title>
     <link rel="icon" type="image/jpg" href="../images/logo_compiso.ico" />
-    <link rel="stylesheet" href="../css/estilos.css">
-    <link rel="stylesheet" href="../css/general.css">
-    <link rel="stylesheet" href="../css/formularios.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mint: '#74C69D',
+                        tealCustom: '#40916c'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-image: url('../images/fondo.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
 
     <?php
     error_reporting(E_ALL);
     ini_set("display_errors", 1);
     require('../utiles/conexion.php');
     require('../utiles/depurar.php');
+    require("./funcionalidad_registro.php");
     ?>
-    <script> window.chtlConfig = { chatbotId: "2783453492" } </script>
-    <script async data-id="2783453492" id="chatling-embed-script" type="text/javascript"
-        src="https://chatling.ai/js/embed.js"></script>
-</head>
-
-<body>
-
-    <header>
-        <div >
-            <div >
-                <img src="../images/logo_compiso.png" alt="Logo" id="logo">
-                <h1 id="titulo">Compiso</h1>
-            </div>
-            <div>
-                <a href="./index.php" id="login">Cerrar sesión</a>
-            </div>
-        </div>
-    </header>
-    <div class="form-container">
-        
-    <h1>Registro</h1>
-
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $tmp_nombre = depurar($_POST["nombre"]);
-            $tmp_contrasena = depurar($_POST["contrasena"]);
-            $tmp_confirmar = depurar($_POST["confirmar_contrasena"]);
-            $tmp_email = depurar($_POST["email"]);
-            $tmp_apellidos = depurar($_POST["apellidos"]);
-            $tmp_telefono = depurar($_POST["telefono"]);
-            $tmp_tipo_usuario = $_POST["tipo_usuario"];
-            $tmp_fecha_nacimiento = $_POST["fecha_nacimiento"];
-            $tmp_sexo = depurar($_POST["sexo"]);
-            $tmp_descripcion = depurar($_POST["descripcion"]);
-            $imagen = $_FILES['imagenes'];
-
-            // Validaciones de campos
-            if ($tmp_nombre == '') {
-                $err_nombre = "El nombre es obligatorio";
-            } else {
-                if (strlen($tmp_nombre) < 3 || strlen($tmp_nombre) > 15) {
-                    $err_nombre = "El nombre debe tener entre 3 y 15 caracteres";
-                } else {
-                    $patron = "/^[a-zA-Z0-9]+$/";
-                    if (!preg_match($patron, $tmp_nombre)) {
-                        $err_nombre = "El nombre solo puede contener letras y números";
-                    } else {
-                        $nombre = $tmp_nombre;
-                    }
-                }
-            }
-
-            if ($tmp_contrasena == '') {
-                $err_contrasena = "La contraseña es obligatoria";
-            } else {
-                if (strlen($tmp_contrasena) < 8 || strlen($tmp_contrasena) > 15) {
-                    $err_contrasena = "Debe tener entre 8 y 15 caracteres";
-                } else {
-                    $patron = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/";
-                    if (!preg_match($patron, $tmp_contrasena)) {
-                        $err_contrasena = "Debe contener mayúsculas, minúsculas, un número o carácter especial";
-                    } else {
-                        if ($tmp_confirmar != $tmp_contrasena) {
-                            $err_confirmar = "Las contraseñas no coinciden";
-                        } else {
-                            $contrasena = $tmp_contrasena;
-                            $contrasena_cifrada = password_hash($contrasena, PASSWORD_DEFAULT);
-                        }
-                    }
-                }
-            }
-
-            if ($tmp_email == '') {
-                $err_email = "El email es obligatorio";
-            } else {
-                if (!filter_var($tmp_email, FILTER_VALIDATE_EMAIL)) {
-                    $err_email = "El formato de email no es válido";
-                } else {
-                    $email = $tmp_email;
-                }
-            }
-
-            if ($tmp_apellidos == '') {
-                $err_apellidos = "Los apellidos son obligatorios";
-            } else {
-                $apellidos = $tmp_apellidos;
-            }
-
-            if ($tmp_telefono == '') {
-                $err_telefono = "El teléfono es obligatorio";
-            } else {
-                if (!is_numeric($tmp_telefono)) {
-                    $err_telefono = "Debe contener solo números";
-                } else {
-                    $telefono = $tmp_telefono;
-                }
-            }
-
-            if ($tmp_tipo_usuario == '') {
-                $err_tipo_usuario = "El tipo de usuario es obligatorio";
-            } else {
-                if ($tmp_tipo_usuario != 1 && $tmp_tipo_usuario != 2) {
-                    $err_tipo_usuario = "Tipo de usuario no válido";
-                } else {
-                    $tipo_usuario = $tmp_tipo_usuario;
-                }
-            }
-
-            if ($tmp_fecha_nacimiento == '') {
-                $err_fecha_nacimiento = "La fecha de nacimiento es obligatoria";
-            } else {
-                $fecha_nacimiento = $tmp_fecha_nacimiento;
-            }
-
-            if ($tmp_sexo == '') {
-                $err_sexo = "El sexo es obligatorio";
-            } else {
-                $sexo = $tmp_sexo;
-            }
-
-            $descripcion = $tmp_descripcion;
-
-             // Validación de imagen
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (!in_array($imagen["type"], $allowed_types)) {
-            echo "<div class='alert alert-danger text-center mt-3'>Formato de imagen no válido.</div>";
-            exit;
-        }
-
-        // Procesar imagen
-        $target_dir = "uploads/";
-        if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0777, true);
-        }
-
-        $file_name = uniqid() . "-" . basename($imagen["name"]);
-        $target_file = $target_dir . $file_name;
-
-        // Verificar si la imagen se mueve correctamente al servidor
-        if (!move_uploaded_file($imagen["tmp_name"], $target_file)) {
-            echo "<div class='alert alert-danger text-center mt-3'>Error al mover la imagen al servidor.</div>";
-            echo "<pre>";
-            print_r(error_get_last());
-            echo "</pre>";
-            exit;
-        } else {
-            echo "<div class='alert alert-success text-center mt-3'>Imagen subida correctamente: " . htmlspecialchars($file_name) . "</div>";
-            
-        }
-        echo "<div class='alert alert-info'>Ruta completa destino: $target_file</div>";
-
-            // Si los campos son correctos, inserta en la base de datos
-            if (
-                isset($nombre) && isset($contrasena_cifrada) && isset($email) && isset($apellidos) &&
-                isset($telefono) && isset($tipo_usuario) && isset($fecha_nacimiento) && isset($sexo)
-            ) {
-                $id_usuario = uniqid(); // Generar un ID único para el usuario
-
-                // Registrar al usuario en la tabla Usuario
-                $sql = $_conexion->prepare("INSERT INTO Usuario (
-                        id_usuario, nombre, contrasena, apellidos, email, telefono, tipo_usuario, fecha_nacimiento, sexo, descripcion, imagen
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
-
-                $sql->bind_param(
-                    "ssssssissss",
-                    $id_usuario,
-                    $nombre,
-                    $contrasena_cifrada,
-                    $apellidos,
-                    $email,
-                    $telefono,
-                    $tipo_usuario,
-                    $fecha_nacimiento,
-                    $sexo,
-                    $descripcion,
-                    $target_file
-                );
-
-                if ($sql->execute()) {
-                    // Si el registro del usuario fue exitoso, registramos en Inquilino o Propietario
-                    if ($tipo_usuario == 1) {
-                        // Tipo de usuario es Inquilino
-                        $preferencias = !empty($_POST["preferencias"]) ? depurar($_POST["preferencias"]) : NULL; // Si no se proporciona, asignar NULL
-                        $datos_bancarios_inquilino = !empty($_POST["datos_bancarios"]) ? depurar($_POST["datos_bancarios"]) : NULL; // Si no se proporciona, asignar NULL
-                        $id_inquilino = uniqid(); // Generar un ID único para el inquilino
-
-                        // Insertar en la tabla Inquilino
-                        $sql_inquilino = $_conexion->prepare("INSERT INTO Inquilino (id_inquilino, preferencias, datos_bancarios, id_usuario) VALUES (?, ?, ?, ?)");
-                        $sql_inquilino->bind_param("ssss", $id_inquilino, $preferencias, $datos_bancarios_inquilino, $id_usuario);
-                        if (!$sql_inquilino->execute()) {
-                            echo "Error al registrar al inquilino: " . $sql_inquilino->error;
-                        }
-                    } elseif ($tipo_usuario == 2) {
-                        // Tipo de usuario es Propietario
-                        $datos_bancarios_propietario = !empty($_POST["datos_bancarios"]) ? depurar($_POST["datos_bancarios"]) : NULL; // Si no se proporciona, asignar NULL
-                        $id_propietario = uniqid(); // Generar un ID único para el propietario
-
-                        // Insertar en la tabla Propietario
-                        $sql_propietario = $_conexion->prepare("INSERT INTO Propietario (id_propietario, datos_bancarios, id_usuario) VALUES (?, ?, ?)");
-                        $sql_propietario->bind_param("sss", $id_propietario, $datos_bancarios_propietario, $id_usuario);
-                        if (!$sql_propietario->execute()) {
-                            echo "Error al registrar al propietario: " . $sql_propietario->error;
-                        }
-                    }
-
-                    // Redirigir al inicio de sesión si todo fue exitoso
-                    header("location: iniciar_sesion.php");
-                    exit;
-                } else {
-                    echo "Error al registrar el usuario: " . $sql->error;
-                }
-            }
-        }
-        ?>
-
-        <form action="" method="post" enctype="multipart/form-data" >
-            <div >
-                <label class="form-label">Nombre</label>
-                <input type="text" name="nombre" 
-                    value="<?php echo htmlspecialchars($_POST['nombre'] ?? '') ?>">
-                <?php if (isset($err_nombre)) echo "<span class='text-danger'>$err_nombre</span>"; ?>
-            </div>
-
-            <div >
-                <label class="form-label">Apellidos</label>
-                <input type="text" name="apellidos" 
-                    value="<?php echo htmlspecialchars($_POST['apellidos'] ?? '') ?>">
-                <?php if (isset($err_apellidos)) echo "<span class='text-danger'>$err_apellidos</span>"; ?>
-            </div>
-
-            <div >
-                <label class="form-label">Contraseña</label>
-                <input type="password" name="contrasena" >
-                <?php if (isset($err_contrasena)) echo "<span class='text-danger'>$err_contrasena</span>"; ?>
-            </div>
-
-            <div >
-                <label class="form-label">Confirmar Contraseña</label>
-                <input type="password" name="confirmar_contrasena" >
-                <?php if (isset($err_confirmar)) echo "<span class='text-danger'>$err_confirmar</span>"; ?>
-            </div>
-
-            <div >
-                <label class="form-label">Email</label>
-                <input type="email" name="email" 
-                    value="<?php echo htmlspecialchars($_POST['email'] ?? '') ?>">
-                <?php if (isset($err_email)) echo "<span class='text-danger'>$err_email</span>"; ?>
-            </div>
-
-            <div >
-                <label class="form-label">Teléfono</label>
-                <input type="tel" name="telefono" 
-                    value="<?php echo htmlspecialchars($_POST['telefono'] ?? '') ?>">
-                <?php if (isset($err_telefono)) echo "<span class='text-danger'>$err_telefono</span>"; ?>
-            </div>
-
-            <div >
-                <label class="form-label">Fecha de nacimiento</label>
-                <input type="date" name="fecha_nacimiento" 
-                    value="<?php echo htmlspecialchars($_POST['fecha_nacimiento'] ?? '') ?>">
-                <?php if (isset($err_fecha_nacimiento)) echo "<span class='text-danger'>$err_fecha_nacimiento</span>"; ?>
-            </div>
-
-            <div >
-                <label class="form-label">Sexo</label>
-                <select name="sexo" >
-                   
-                <option value="">Seleccione...</option>
-                    <option value="Hombre" <?php if (isset($_POST['sexo']) && $_POST['sexo'] == 'Hombre') echo 'selected'; ?>>Hombre</option>
-                    <option value="Mujer" <?php if (isset($_POST['sexo']) && $_POST['sexo'] == 'Mujer') echo 'selected'; ?>>Mujer</option>
-                    <option value="Otro" <?php if (isset($_POST['sexo']) && $_POST['sexo'] == 'Otro') echo 'selected'; ?>>Otro</option>
-                </select>
-                <?php if (isset($err_sexo)) echo "<span class='text-danger'>$err_sexo</span>"; ?>
-            </div>
-
-            <div>
-                <label class="form-label">Tipo de usuario</label>
-                <div>
-                    <input type="radio" id="inquilino" name="tipo_usuario" value="1" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '1') echo 'checked'; ?>>
-                    <label for="inquilino">Inquilino</label>
-                </div>
-                <div>
-                    <input type="radio" id="propietario" name="tipo_usuario" value="2" <?php if (isset($_POST['tipo_usuario']) && $_POST['tipo_usuario'] == '2') echo 'checked'; ?>>
-                    <label for="propietario">Propietario</label>
-                </div>
-                <?php if (isset($err_tipo_usuario)) echo "<span class='text-danger'>$err_tipo_usuario</span>"; ?>
-            </div>
-
-
-            <div >
-                <label class="form-label">Descripción</label>
-                <textarea name="descripcion" ><?php echo htmlspecialchars($_POST['descripcion'] ?? '') ?></textarea>
-            </div>
-
-            <div >
-                <label class="form-label">Datos Bancarios</label>
-                <input type="text" name="datos_bancarios" 
-                    value="<?php echo htmlspecialchars($_POST['datos_bancarios'] ?? '') ?>">
-            </div>
-
-            <div  id="preferenciasContainer" style="display: none;">
-                <label class="form-label">Preferencias (solo inquilinos)</label>
-                <textarea name="preferencias" ><?php echo htmlspecialchars($_POST['preferencias'] ?? '') ?></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label for="imagenes" class="form-label">Foto del usuario </label>
-                <input type="file" class="form-control" name="imagenes" accept="image/*" required>
-            </div>
-
-            <button type="submit" >Registrarse</button>
-        </form>
-    </div>
 
     <script>
-        // Mostrar u ocultar las preferencias dependiendo del tipo de usuario
-        document.querySelector('select[name="tipo_usuario"]').addEventListener('change', function() {
-            const preferenciasContainer = document.getElementById('preferenciasContainer');
-            if (this.value == '1') {
-                preferenciasContainer.style.display = 'block';
+        // Validación en vivo para la edad >= 18 años
+        function validarEdad() {
+            const inputFecha = document.getElementById('fecha_nacimiento');
+            const errorEdad = document.getElementById('error_edad');
+            const fechaIngresada = new Date(inputFecha.value);
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - fechaIngresada.getFullYear();
+            const m = hoy.getMonth() - fechaIngresada.getMonth();
+            if (
+                edad < 18 ||
+                (edad === 18 && m < 0) ||
+                (edad === 18 && m === 0 && hoy.getDate() < fechaIngresada.getDate())
+            ) {
+                errorEdad.textContent = "Debes ser mayor de 18 años";
+                inputFecha.setCustomValidity("Debes ser mayor de 18 años");
             } else {
-                preferenciasContainer.style.display = 'none';
+                errorEdad.textContent = "";
+                inputFecha.setCustomValidity("");
             }
-        });
+        }
 
-        // Mostrar preferencias al recargar si el valor es Inquilino
-        window.addEventListener('load', function() {
-            const tipoUsuario = document.querySelector('select[name="tipo_usuario"]').value;
-            const preferenciasContainer = document.getElementById('preferenciasContainer');
-            if (tipoUsuario == '1') {
-                preferenciasContainer.style.display = 'block';
-            }
+        window.addEventListener('load', () => {
+            const inputFecha = document.getElementById('fecha_nacimiento');
+            inputFecha.addEventListener('input', validarEdad);
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', (e) => {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    form.querySelectorAll(':invalid').forEach((el) => {
+                        el.reportValidity();
+                    });
+                }
+            });
         });
     </script>
+</head>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+OJ5n1hbQpC4eYfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+<body class="min-h-screen flex flex-col bg-white text-gray-800 font-sans">
+
+    <!-- HEADER -->
+    <header class="w-full bg-mint shadow-md py-4 px-6">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="/">
+        <img src="../images/logo_compiso.png" alt="Logo" class="rounded-lg w-12 h-12">
+      </a>
+      <h1 class="text-white text-2xl font-bold">Compiso</h1>
+    </div>
+    <div class="flex items-center gap-2">
+        <a href="/" class="border border-white text-white px-4 py-2 rounded-lg hover:bg-white hover:text-mint transition">Volver</a>
+    </div>
+  </div>
+</header>
+
+    <!-- MAIN FORM CONTAINER -->
+    <main class="flex-grow container mx-auto px-6 py-16 flex justify-center">
+        <section class="bg-white rounded-3xl max-w-4xl w-full p-10 sm:p-12 shadow-[0_0_15px_0_rgba(0,108,103,0.6)]"
+            aria-labelledby="titulo-registro">
+
+            <h2 id="titulo-registro" class="text-4xl font-extrabold mb-8 text-center text-tealCustom tracking-tight">
+                Registro
+            </h2>
+
+            <form action="" method="post" enctype="multipart/form-data" novalidate
+                class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6" aria-describedby="form-errors">
+
+                <div>
+                    <label for="nombre" class="block text-gray-700 font-semibold mb-2">Nombre</label>
+                    <input type="text" name="nombre" id="nombre" required
+                        value="<?php echo htmlspecialchars($nombre ?? ''); ?>"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-required="true" aria-describedby="error-nombre" />
+                    <?php if (!empty($err_nombre))
+                        echo "<p id='error-nombre' class='mt-1 text-sm text-red-600 font-medium'>$err_nombre</p>"; ?>
+                </div>
+
+                <div>
+                    <label for="apellidos" class="block text-gray-700 font-semibold mb-2">Apellidos</label>
+                    <input type="text" name="apellidos" id="apellidos" required
+                        value="<?php echo htmlspecialchars($apellidos ?? ''); ?>"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-required="true" aria-describedby="error-apellidos" />
+                    <?php if (!empty($err_apellidos))
+                        echo "<p id='error-apellidos' class='mt-1 text-sm text-red-600 font-medium'>$err_apellidos</p>"; ?>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
+                    <input type="email" name="email" id="email" required
+                        value="<?php echo htmlspecialchars($email ?? ''); ?>"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-required="true" aria-describedby="error-email" />
+                    <?php if (!empty($err_email))
+                        echo "<p id='error-email' class='mt-1 text-sm text-red-600 font-medium'>$err_email</p>"; ?>
+                </div>
+
+                <div>
+                    <label for="contrasena" class="block text-gray-700 font-semibold mb-2">Contraseña</label>
+                    <div class="relative">
+                        <input type="password" name="contrasena" id="contrasena" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                            aria-required="true" aria-describedby="error-contrasena" />
+                        <button type="button" onclick="mostrarOcultar()"
+                            class="absolute right-3 top-3 text-tealCustom font-semibold text-sm hover:text-tealCustom/80 focus:outline-none focus:ring-2 focus:ring-tealCustom rounded select-none">
+                            <i id="icono" class="fas fa-eye"></i>
+                        </button>
+                        <?php if (!empty($err_contrasena))
+                            echo "<p id='error-contrasena' class='mt-1 text-sm text-red-600 font-medium'>$err_contrasena</p>"; ?>
+                    </div>
+                </div>
+
+
+                <div>
+                    <label for="telefono" class="block text-gray-700 font-semibold mb-2">Teléfono</label>
+                    <input type="tel" name="telefono" id="telefono" required
+                        value="<?php echo htmlspecialchars($telefono ?? ''); ?>" maxlength="9" pattern="\d{9}"
+                        placeholder="Ej: 612345678"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-required="true" aria-describedby="error-telefono" />
+                    <?php if (!empty($err_telefono))
+                        echo "<p id='error-telefono' class='mt-1 text-sm text-red-600 font-medium'>$err_telefono</p>"; ?>
+                </div>
+
+                <div>
+                    <label for="confirmar_contrasena" class="block text-gray-700 font-semibold mb-2">Confirmar
+                        contraseña</label>
+                    <div class="relative">
+                        <input type="password" name="confirmar_contrasena" id="confirmar_contrasena" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                            aria-required="true" aria-describedby="error-confirmar_contrasena" />
+                        <button type="button" onclick="mostrarOcultar2()"
+                            class="absolute right-3 top-3 text-tealCustom font-semibold text-sm hover:text-tealCustom/80 focus:outline-none focus:ring-2 focus:ring-tealCustom rounded select-none">
+                            <i id="icono" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <?php if (!empty($err_confirmar_contrasena))
+                        echo "<p id='error-confirmar_contrasena' class='mt-1 text-sm text-red-600 font-medium'>$err_confirmar_contrasena</p>"; ?>
+                </div>
+
+                <div>
+                    <label for="tipo_usuario" class="block text-gray-700 font-semibold mb-2">Tipo de usuario</label>
+                    <select name="tipo_usuario" id="tipo_usuario" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-required="true" aria-describedby="error-tipo_usuario">
+                        <option value="" disabled <?php if (empty($tipo_usuario))
+                            echo 'selected'; ?>>Seleccione
+                        </option>
+                        <option value="propietario" <?php if (($tipo_usuario ?? '') === 'propietario')
+                            echo 'selected'; ?>>Propietario</option>
+                        <option value="inquilino" <?php if (($tipo_usuario ?? '') === 'inquilino')
+                            echo 'selected'; ?>>Inquilino</option>
+                    </select>
+                    <?php if (!empty($err_tipo_usuario))
+                        echo "<p id='error-tipo_usuario' class='mt-1 text-sm text-red-600 font-medium'>$err_tipo_usuario</p>"; ?>
+                </div>
+
+                <div>
+                    <label for="fecha_nacimiento" class="block text-gray-700 font-semibold mb-2">Fecha de
+                        nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required
+                        value="<?php echo htmlspecialchars($fecha_nacimiento ?? ''); ?>"
+                        max="<?php echo date('Y-m-d'); ?>"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-required="true" aria-describedby="error_edad" />
+                    <p id="error_edad" class="mt-1 text-sm text-red-600 font-medium" aria-live="polite"></p>
+                    <?php if (!empty($err_fecha_nacimiento))
+                        echo "<p id='error_fecha_nacimiento' class='mt-1 text-sm text-red-600 font-medium'>$err_fecha_nacimiento</p>"; ?>
+                </div>
+
+
+                <div>
+                    <label for="sexo" class="block text-gray-700 font-semibold mb-2">Sexo</label>
+                    <select name="sexo" id="sexo" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-required="true" aria-describedby="error-sexo">
+                        <option value="" disabled <?php if (empty($sexo))
+                            echo 'selected'; ?>>Seleccione</option>
+                        <option value="Hombre" <?php if (($sexo ?? '') === 'Hombre')
+                            echo 'selected'; ?>>Hombre</option>
+                        <option value="Mujer" <?php if (($sexo ?? '') === 'Mujer')
+                            echo 'selected'; ?>>Mujer</option>
+                        <option value="Otro" <?php if (($sexo ?? '') === 'Otro')
+                            echo 'selected'; ?>>Otro</option>
+                    </select>
+                    <?php if (!empty($err_sexo))
+                        echo "<p id='error-sexo' class='mt-1 text-sm text-red-600 font-medium'>$err_sexo</p>"; ?>
+
+                </div>
+
+
+                <?php if (!empty($err_sexo))
+                    echo "<p class='text-red-500'>$err_sexo</p>"; ?>
+
+
+                <div>
+
+                    <label for="imagen" class="block text-gray-700 font-semibold mb-2">Foto de perfil</label>
+                    <input type="file" name="imagen" id="imagen" accept="image/png, image/jpeg"
+                        class="w-full text-gray-700" aria-describedby="error-imagen" required />
+                    <!--<button type="submit" class="mt-2 bg-tealCustom text-white px-4 py-2 rounded-lg">Subir
+                            Imagen</button>-->
+
+                </div>
+
+                <?php
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] == 0) {
+                        $archivo = $_FILES["imagen"];
+                        $nombre = basename($archivo["name"]);
+                        $ruta_destino = "uploads/" . $nombre;
+
+                        // Verifica que sea PNG o JPG
+                        $tipo = $archivo["type"];
+                        if ($tipo == "image/png" || $tipo == "image/jpeg" || $tipo == "image/gif" || $tipo == "image/webp") {
+                            // Mueve el archivo a la carpeta de destino
+                            if (move_uploaded_file($archivo["tmp_name"], $ruta_destino)) {
+                                echo "Imagen subida con éxito: $nombre";
+                            } else {
+                                echo "Error al subir la imagen.";
+                            }
+                        } else {
+                            echo "Formato no permitido.";
+                        }
+                    } else {
+                        echo "No se seleccionó ninguna imagen o hubo un error.";
+                    }
+                }
+                ?>
+
+                <br>
+
+                <div class="sm:col-span-2">
+                    <label for="descripcion" class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                    <textarea name="descripcion" id="descripcion" rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tealCustom focus:border-tealCustom"
+                        aria-describedby="error-descripcion"><?php echo htmlspecialchars($descripcion ?? ''); ?></textarea>
+                    <?php if (!empty($err_descripcion))
+                        echo "<p id='error-descripcion' class='mt-1 text-sm text-red-600 font-medium'>$err_descripcion</p>"; ?>
+                </div>
+
+
+
+                <div class="sm:col-span-2 flex justify-center">
+                    <button type="submit"
+                        class="bg-tealCustom hover:bg-mint text-white font-bold py-3 px-8 rounded-lg shadow-md focus:outline-none focus:ring-4 focus:ring-tealCustom focus:ring-opacity-50 transition"
+                        aria-label="Enviar formulario de registro">
+                        Registrar
+                    </button>
+                </div>
+
+                <?php if (!empty($err_general)): ?>
+                    <p id="form-errors" class="sm:col-span-2 text-center text-red-600 font-semibold">
+                        <?php echo $err_general; ?>
+                    </p>
+                <?php endif; ?>
+
+                <?php if (!empty($registro_exitoso)): ?>
+                    <p class="sm:col-span-2 text-center text-green-600 font-semibold">
+                        <?php echo $registro_exitoso; ?>
+                    </p>
+                <?php endif; ?>
+            </form>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-black text-white py-6 px-4 mt-auto">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+        <p class="text-sm">&copy; <?php echo date("Y"); ?> Compiso. Todos los derechos reservados.</p>
+        <a href="https://www.instagram.com/compiso_web" target="_blank" rel="noopener noreferrer"
+           class="flex items-center space-x-2 hover:text-mint transition-colors duration-300">
+            <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.25-.25a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </svg>
+            <span class="text-sm">Instagram</span>
+        </a>
+    </div>
+</footer>
+    <script>
+        function mostrarOcultar() {
+            var input = document.getElementById("contrasena");
+            var icono = document.getElementById("icono");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icono.classList.remove("fa-eye");
+                icono.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icono.classList.remove("fa-eye-slash");
+                icono.classList.add("fa-eye");
+            }
+        }
+        function mostrarOcultar2() {
+            var input = document.getElementById("confirmar_contrasena");
+            var icono = document.getElementById("icono");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icono.classList.remove("fa-eye");
+                icono.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icono.classList.remove("fa-eye-slash");
+                icono.classList.add("fa-eye");
+            }
+        }
+
+    </script>
 </body>
 
 </html>
